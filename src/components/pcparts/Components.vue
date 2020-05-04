@@ -2,16 +2,29 @@
     <div>
         <Navbar/>
         <div class="content">
-            <ul class="nav nav-tabs">
-                <li class="nav-item">
-                    <h4 class="pull-right">Linh kiện máy tính</h4>
-                </li>
-            </ul>
-            <div class="pull-right" style="margin-top: 10px">
-                <router-link class="" to="/components/create">
-                    <button class="btn btn-primary">Tạo mới linh kiện máy tính</button>
+            <div class="pull-right" style="margin-bottom: 15px">
+                <router-link to="/components/create">
+                    <button class="btn-sm btn-info">
+                        Tạo mới linh kiện máy tính
+                    </button>
                 </router-link>
             </div>
+            <table class="table table-active" style="margin-top: 15px">
+                <thead>
+                <tr>
+                    <th>Tên linh kiện</th>
+                    <th>Loại linh kiện</th>
+                    <th>Giá</th>
+                </tr>
+                </thead>
+                <tbody :key="part.id" v-for="part in parts">
+                <tr>
+                    <td>{{ part.name }}</td>
+                    <td>{{ part.type }}</td>
+                    <td>{{ part.price }}</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
@@ -25,21 +38,19 @@
         components: {Navbar},
         data() {
             return {
-                content: ''
+                parts: []
             };
         },
         mounted() {
             UserService.getPCParts().then(
                 response => {
-                    this.content = response.data;
-                },
-                error => {
-                    this.content =
-                        (error.response && error.response.data) ||
-                        error.message ||
-                        error.toString();
+                    return response.json()
                 }
-            );
+            ).then((res) => {
+                this.parts = res
+                // eslint-disable-next-line no-unused-vars
+            }).catch(e => {
+            });
         }
     }
 </script>

@@ -19,7 +19,7 @@
                     </b-nav-item>
                     <b-nav-item @click.prevent="logOut">
                         <font-awesome-icon icon="sign-out-alt"/>
-                        LogOut
+                        Đăng xuất
                     </b-nav-item>
                 </div>
             </b-navbar-nav>
