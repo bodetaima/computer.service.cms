@@ -4,6 +4,7 @@ import Home from "../components/Home";
 import Components from "../components/pcparts/Components";
 import ComponentsCreate from "../components/pcparts/ComponentsCreate";
 import Login from '../components/auth/Login';
+import ComponentView from "../components/pcparts/ComponentView";
 
 Vue.use(Router);
 
@@ -27,11 +28,19 @@ export const router = new Router({
             }
         },
         {
-            path: '/components/create',
+            path: '/component/create',
             name: 'Components Create',
             component: ComponentsCreate,
             meta: {
                 title: 'Tạo linh kiện máy tính mới - WeFixIt'
+            }
+        },
+        {
+            path: '/component/:type/:id',
+            name: 'Components Vie',
+            component: ComponentView,
+            meta: {
+                title: 'Sửa thông tin phụ kiện - WeFixIt'
             }
         },
         {

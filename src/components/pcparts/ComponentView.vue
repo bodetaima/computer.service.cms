@@ -73,7 +73,7 @@
                                     <option value="psu">Nguồn</option>
                                 </optgroup>
                                 <optgroup label="Thiết bị lưu trữ">
-                                    <option value="hdd">HDD</option>
+                                    <option value="hhd">HDD</option>
                                     <option value="ssd">SSD</option>
                                 </optgroup>
                             </select>
@@ -93,11 +93,12 @@
     </div>
 </template>
 <script>
-    import UserService from '../../services/user.service';
+
     import Navbar from "../Navbar";
+    import UserService from '../../services/user.service';
 
     export default {
-        name: 'ComponentsCreate',
+        name: 'ComponentView',
         components: {Navbar},
         data() {
             return {
@@ -110,7 +111,7 @@
                     name: '',
                     type: '',
                     price: 0
-                }
+                },
             }
         },
         methods: {
@@ -130,17 +131,32 @@
             },
             onSubmitForm() {
                 const data = {
+                    "id": this.$route.params.id,
                     "type": this.form.type,
                     "name": this.form.name,
                     "price": this.note.price,
                     "description": this.form.description
                 }
-                UserService.createPcPart('http://127.0.0.1:1025/endpoint/part', data)
+                UserService.updatePartDetails('http://127.0.0.1:1025/endpoint/part', data)
                     .then(() => {
                         alert('Lưu thành công!');
-                        this.$router.push({"name": "Components"});
                     });
             }
+        },
+        mounted() {
+            UserService.getPartDetails(this.$route.params.type, this.$route.params.id).then(
+                response => {
+                    return response.json();
+                }
+            ).then((res) => {
+                    this.form.name = res.name;
+                    this.form.type = res.type;
+                    this.note.name = res.name;
+                    this.note.type = res.type.toUpperCase();
+                    this.form.description = res.description;
+                    this.note.price = res.price;
+                }
+            )
         }
     }
 </script>

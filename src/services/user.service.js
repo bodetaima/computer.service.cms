@@ -4,14 +4,14 @@ const API_URL = 'http://127.0.0.1:1025/endpoint';
 
 class UserService {
 
-    getIndex() {
-        return fetch(API_URL + '/index', {
+    async getIndex() {
+        return await fetch(API_URL + '/index', {
             headers: authHeader()
         });
     }
 
-    getPCParts() {
-        return fetch(API_URL + '/part', {
+    async getPCParts() {
+        return await fetch(API_URL + '/part', {
             headers: authHeader()
         })
     }
@@ -28,6 +28,38 @@ class UserService {
             body: JSON.stringify(data)
         });
         return response.json();
+    }
+
+    async getPartDetails(type, id) {
+        return await fetch(API_URL + `/part/${type}/${id}`, {
+            headers: authHeader()
+        })
+    }
+
+    async updatePartDetails(url = '', data = {}) {
+        const response = await fetch(url, {
+            method: 'PUT',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: authHeader(),
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
+            body: JSON.stringify(data)
+        });
+        return response.json();
+    }
+
+    async deletePart(url = '') {
+        await fetch(url, {
+            method: 'DELETE',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: authHeader(),
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer'
+        });
     }
 }
 

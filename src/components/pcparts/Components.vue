@@ -3,7 +3,7 @@
         <Navbar/>
         <div class="content">
             <div class="pull-right" style="margin-bottom: 15px">
-                <router-link to="/components/create">
+                <router-link to="/component/create">
                     <button class="btn-sm btn-info">
                         Tạo mới linh kiện máy tính
                     </button>
@@ -15,13 +15,17 @@
                     <th>Tên linh kiện</th>
                     <th>Loại linh kiện</th>
                     <th>Giá</th>
+                    <th>Xử lý</th>
                 </tr>
                 </thead>
-                <tbody :key="part.id" v-for="part in parts">
+                <tbody :key="part.type + part.id" v-bind:index="index" v-for="(part, index) in parts">
                 <tr>
-                    <td>{{ part.name }}</td>
-                    <td>{{ part.type }}</td>
-                    <td>{{ part.price }}</td>
+                    <td><a :href="'/component/' + part.type + '/' + part.id">{{ part.name }}</a></td>
+                    <td>{{ part.type.toUpperCase() }}</td>
+                    <td>{{ part.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND'}) }}</td>
+                    <td>
+                        <button @click="deletePart(part.type, part.id, index)" class="btn btn-danger">Xóa</button>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -51,6 +55,15 @@
                 // eslint-disable-next-line no-unused-vars
             }).catch(e => {
             });
+        },
+        methods: {
+            deletePart(type, id, index) {
+                UserService.deletePart('http://127.0.0.1:1025/endpoint/part/' + type + '/' + id)
+                    .then(() => {
+                        this.parts.splice(index, 1);
+                        alert("Xóa thành công!");
+                    })
+            }
         }
     }
 </script>

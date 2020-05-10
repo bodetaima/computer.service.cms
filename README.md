@@ -1,4 +1,4 @@
-# Computer Service CMS
+# computer.service.cms
 
 ## Project setup
 ```
