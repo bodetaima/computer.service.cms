@@ -32,6 +32,7 @@
 
             </div>
             <table class="table table-active" style="margin-top: 15px">
+                <span v-if="empty">Không có item nào!</span>
                 <thead>
                 <tr>
                     <th>Tên linh kiện</th>
@@ -66,7 +67,8 @@
             return {
                 parts: [],
                 query: '',
-                type: ''
+                type: '',
+                empty: false
             };
         },
         mounted() {
@@ -88,12 +90,23 @@
                         alert("Xóa thành công!");
                     })
             },
+            isEmpty(obj) {
+                for (let key in obj) {
+                    if (Object.prototype.hasOwnProperty.call(obj, key))
+                        return false;
+                }
+                return true;
+            },
             searchPart() {
                 console.log(this.type + ' ' + this.query);
                 UserService.searchPart('http://127.0.0.1:1025/endpoint/part/search?type=' + this.type + '&query=' + this.query)
                     .then(res => {
-                        this.parts = res
-                        console.log(this.parts);
+                        if (!this.isEmpty(res)) {
+                            this.parts = res;
+                        } else {
+                            this.parts = res;
+                            this.empty = true;
+                        }
                         // eslint-disable-next-line no-unused-vars
                     }).catch(e => {
                 });
