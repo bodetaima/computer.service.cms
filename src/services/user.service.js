@@ -61,6 +61,19 @@ class UserService {
             referrerPolicy: 'no-referrer'
         });
     }
+
+    async searchPart(url = '') {
+        const response = await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: authHeader(),
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer'
+        });
+        return response.json();
+    }
 }
 
 export default new UserService();

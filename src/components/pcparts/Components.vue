@@ -2,12 +2,34 @@
     <div>
         <Navbar/>
         <div class="content">
-            <div class="pull-right" style="margin-bottom: 15px">
-                <router-link to="/component/create">
-                    <button class="btn-sm btn-info">
-                        Tạo mới linh kiện máy tính
-                    </button>
-                </router-link>
+            <div style="display: flex">
+                <div>
+                    <router-link to="/component/create">
+                        <button class="btn btn-info">
+                            Tạo mới linh kiện máy tính
+                        </button>
+                    </router-link>
+                </div>
+                <div style="margin: 10px"></div>
+                <input class="form-control col-sm-2" type="text" v-model="query" value=""/>
+                <div style="margin: 5px"></div>
+                <select class="form-control col-sm-2" id="type" v-model="type">
+                    <option value="">-- Chọn linh kiện --</option>
+                    <optgroup label="Linh kiện máy tính">
+                        <option value="mainboard">Mainboard</option>
+                        <option value="cpu">CPU</option>
+                        <option value="ram">RAM</option>
+                        <option value="vga">VGA</option>
+                        <option value="psu">Nguồn</option>
+                    </optgroup>
+                    <optgroup label="Thiết bị lưu trữ">
+                        <option value="hdd">HDD</option>
+                        <option value="ssd">SSD</option>
+                    </optgroup>
+                </select>
+                <div style="margin: 5px"></div>
+                <button @click="searchPart" class="btn btn-info">Tìm kiếm</button>
+
             </div>
             <table class="table table-active" style="margin-top: 15px">
                 <thead>
@@ -42,7 +64,9 @@
         components: {Navbar},
         data() {
             return {
-                parts: []
+                parts: [],
+                query: '',
+                type: ''
             };
         },
         mounted() {
@@ -63,6 +87,16 @@
                         this.parts.splice(index, 1);
                         alert("Xóa thành công!");
                     })
+            },
+            searchPart() {
+                console.log(this.type + ' ' + this.query);
+                UserService.searchPart('http://127.0.0.1:1025/endpoint/part/search?type=' + this.type + '&query=' + this.query)
+                    .then(res => {
+                        this.parts = res
+                        console.log(this.parts);
+                        // eslint-disable-next-line no-unused-vars
+                    }).catch(e => {
+                });
             }
         }
     }
