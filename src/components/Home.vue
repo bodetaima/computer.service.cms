@@ -22,7 +22,7 @@
         mounted() {
             UserService.getIndex().then(
                 response => {
-                    return response.json()
+                    return response.json();
                 }
             ).then((res) => {
                 this.content = res.message;
