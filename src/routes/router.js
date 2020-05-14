@@ -37,7 +37,7 @@ export const router = new Router({
         },
         {
             path: '/component/:type/:id',
-            name: 'Components Vie',
+            name: 'Components View',
             component: ComponentView,
             meta: {
                 title: 'Sửa thông tin phụ kiện - WeFixIt'

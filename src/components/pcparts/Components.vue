@@ -32,7 +32,6 @@
 
             </div>
             <table class="table table-active" style="margin-top: 15px">
-                <span v-if="empty">Không có item nào!</span>
                 <thead>
                 <tr>
                     <th>Tên linh kiện</th>
@@ -43,7 +42,11 @@
                 </thead>
                 <tbody :key="part.type + part.id" v-bind:index="index" v-for="(part, index) in parts">
                 <tr>
-                    <td><a :href="'/component/' + part.type + '/' + part.id">{{ part.name }}</a></td>
+                    <td>
+                        <router-link :to="{ name: 'Components View', params: { type: part.type, id: part.id } }">{{
+                            part.name }}
+                        </router-link>
+                    </td>
                     <td>{{ part.type.toUpperCase() }}</td>
                     <td>{{ part.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND'}) }}</td>
                     <td>
@@ -52,6 +55,73 @@
                 </tr>
                 </tbody>
             </table>
+            <span v-if="empty">Không có item nào!</span>
+            <div v-if="totalPages > 0">
+                <ul class="pagination pull-right font-weight-bold">
+                    <li class="page-item">
+                        <label>
+                            <select @change="changePage(size, 0)" class="page-link" v-model="size">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </label>
+                    </li>
+                    <li class="page-item">
+                        <button
+                                :disabled="page === 0"
+                                @click="changePage(size, 0)"
+                                aria-label="First"
+                                class="page-link"
+                                data-toggle="tooltip"
+                                title="First Page"><span aria-hidden="true">&laquo;</span>
+                        </button>
+                    </li>
+
+                    <li class="page-item">
+                        <button :disabled="page === 0" @click="changePage(size, page - 1)" aria-label="Back"
+                                class="page-link" data-toggle="tooltip" title="Back">&larr;
+                        </button>
+                    </li>
+
+                    <li class="page-item"
+                        v-if="page - 3 > 0">
+                        <button @click="changePage(size,page - 1)" class="page-link"> <span
+                                data-feather="more-horizontal">...</span>
+                        </button>
+                    </li>
+
+                    <li :key="page"
+                        class="page-item" v-for="page in getPageNumbers()">
+                        <button @click="changePage(size, page)"
+                                class="page-link">{{ page + 1 }}
+                        </button>
+                    </li>
+
+                    <li class="page-item"
+                        v-if="page + 3 < totalPages">
+                        <button @click="changePage(size,page + 1)"
+                                class="page-link "><span
+                                data-feather="more-horizontal">...</span>
+                        </button>
+                    </li>
+
+                    <li class="page-item">
+                        <button :disabled="page === totalPages - 1" @click="changePage(size,page + 1)"
+                                aria-label="Forward" class="page-link" data-toggle="tooltip"
+                                title="Forward">&rarr;
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button :disabled="page === totalPages - 1" @click="changePage(size, totalPages - 1)"
+                                aria-label="Last Page" class="page-link" data-toggle="tooltip"
+                                title="Last Page">&raquo;
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>
@@ -66,18 +136,26 @@
         data() {
             return {
                 parts: [],
+                size: 10,
+                page: 0,
+                totalPages: 0,
+                totalElements: 0,
                 query: '',
                 type: '',
                 empty: false
             };
         },
         mounted() {
-            UserService.getPCParts().then(
+            UserService.getPCParts(this.size, this.page).then(
                 response => {
                     return response.json()
                 }
             ).then((res) => {
-                this.parts = res
+                this.parts = res.parts;
+                this.size = res.size;
+                this.page = res.page;
+                this.totalPages = res.totalPages;
+                this.totalElements = res.totalElements;
                 // eslint-disable-next-line no-unused-vars
             }).catch(e => {
             });
@@ -99,23 +177,41 @@
             },
             searchPart() {
                 console.log(this.type + ' ' + this.query);
-                UserService.searchPart('http://127.0.0.1:1025/endpoint/part/search?type=' + this.type + '&query=' + this.query)
+                UserService.searchPart('http://127.0.0.1:1025/endpoint/part/search?type=' + this.type + '&query=' + this.query + '&size=' + 10)
                     .then(res => {
-                        if (!this.isEmpty(res)) {
-                            this.parts = res;
-                        } else {
-                            this.parts = res;
-                            this.empty = true;
-                        }
+                        this.empty = this.isEmpty(res.parts);
+                        this.parts = res.parts;
+                        this.size = res.size;
+                        this.page = res.page;
+                        this.totalPages = res.totalPages;
+                        this.totalElements = res.totalElements;
                         // eslint-disable-next-line no-unused-vars
                     }).catch(e => {
+                });
+            },
+            getPageNumbers() {
+                return [...Array(Number(this.totalPages)).keys()];
+            },
+            changePage(size, page) {
+                UserService.getPCParts(size, page).then(
+                    response => {
+                        return response.json()
+                    }
+                ).then((res) => {
+                    this.parts = res.parts;
+                    this.size = res.size;
+                    this.page = res.page;
+                    this.totalPages = res.totalPages;
+                    this.totalElements = res.totalElements;
+                    // eslint-disable-next-line no-unused-vars
+                }).catch(e => {
                 });
             }
         }
     }
 </script>
 
-<style>
+<style scoped>
     .pull-right {
         float: right
     }
@@ -140,5 +236,11 @@
 
     p {
         margin: 0 0 20px 0;
+    }
+
+    button:disabled,
+    button[disabled] {
+        color: #666666;
+        cursor: not-allowed;
     }
 </style>
