@@ -62,7 +62,7 @@
                                         <option value="mainboard">Mainboard</option>
                                         <option value="cpu">CPU</option>
                                         <option value="ram">RAM</option>
-                                        <option value="vga">VGA</option>
+                                        <option value="gpu">GPU</option>
                                         <option value="psu">Nguồn</option>
                                     </optgroup>
                                     <optgroup label="Thiết bị lưu trữ">

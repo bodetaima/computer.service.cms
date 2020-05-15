@@ -62,7 +62,7 @@
                                         <option value="mainboard">Mainboard</option>
                                         <option value="cpu">CPU</option>
                                         <option value="ram">RAM</option>
-                                        <option value="vga">VGA</option>
+                                        <option value="gpu">GPU</option>
                                         <option value="psu">Nguồn</option>
                                     </optgroup>
                                     <optgroup label="Thiết bị lưu trữ">
@@ -107,15 +107,8 @@
                             <div class="input-group">
                         <textarea class="form-control" id="description" maxlength="2000"
                                   name="description" rows="6"
-                                  type="text" v-model="description"
-                                  v-validate="'required'"></textarea>
+                                  type="text" v-model="description"></textarea>
 
-                            </div>
-                            <div
-                                    role="alert"
-                                    style="color: red; font-size: 10px"
-                                    v-if="errors.has('description')"
-                            >Vui lòng nhập mô tả linh kiện!
                             </div>
                         </div>
                         <div class="form-group">
@@ -157,6 +150,7 @@
                 this.loading = true;
                 this.$validator.validateAll().then(isValid => {
                     if (!isValid) {
+                        this.error = 'Vui lòng nhập các trường còn thiếu!'
                         this.loading = false;
                         return;
                     }

@@ -1,7 +1,7 @@
 <template>
     <div>
         <Navbar/>
-        <div class="content">
+        <div class="content table-responsive">
             <div style="display: flex">
                 <div>
                     <router-link to="/component/create">
@@ -19,7 +19,7 @@
                         <option value="mainboard">Mainboard</option>
                         <option value="cpu">CPU</option>
                         <option value="ram">RAM</option>
-                        <option value="vga">VGA</option>
+                        <option value="gpu">GPU</option>
                         <option value="psu">Nguồn</option>
                     </optgroup>
                     <optgroup label="Thiết bị lưu trữ">
@@ -50,14 +50,21 @@
                     <td>{{ part.type.toUpperCase() }}</td>
                     <td>{{ part.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND'}) }}</td>
                     <td>
-                        <button @click="deletePart(part.type, part.id, index)" class="btn btn-danger">Xóa</button>
+                        <button @click="deletePart(part.id, index)" class="btn btn-danger">Xóa</button>
                     </td>
                 </tr>
                 </tbody>
             </table>
             <span v-if="empty">Không có item nào!</span>
+            <div style="margin: 10px"></div>
             <div v-if="totalPages > 0">
                 <ul class="pagination pull-right font-weight-bold">
+                    <li class="page-item">
+                        <label>
+                            <input @keyup.enter="changePage(size, inputPage - 1)" class="page-link" type="number"
+                                   v-model="inputPage"/>
+                        </label>
+                    </li>
                     <li class="page-item">
                         <label>
                             <select @change="changePage(size, 0)" class="page-link" v-model="size">
@@ -138,6 +145,7 @@
                 parts: [],
                 size: 10,
                 page: 0,
+                inputPage: 1,
                 totalPages: 0,
                 totalElements: 0,
                 query: '',
@@ -161,8 +169,8 @@
             });
         },
         methods: {
-            deletePart(type, id, index) {
-                UserService.deletePart('http://127.0.0.1:1025/endpoint/part/' + type + '/' + id)
+            deletePart(id, index) {
+                UserService.deletePart('http://127.0.0.1:1025/endpoint/part/' + '/' + id)
                     .then(() => {
                         this.parts.splice(index, 1);
                         alert("Xóa thành công!");
@@ -242,5 +250,15 @@
     button[disabled] {
         color: #666666;
         cursor: not-allowed;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    @media only screen and (min-width: 800px) {
+        table {
+            width: 100%;
+        }
     }
 </style>
