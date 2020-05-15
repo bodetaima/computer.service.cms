@@ -58,16 +58,8 @@
                                         v-model="type"
                                         v-validate="'required'">
                                     <option disabled hidden value="">-- Chọn linh kiện --</option>
-                                    <optgroup label="Linh kiện máy tính">
-                                        <option value="mainboard">Mainboard</option>
-                                        <option value="cpu">CPU</option>
-                                        <option value="ram">RAM</option>
-                                        <option value="gpu">GPU</option>
-                                        <option value="psu">Nguồn</option>
-                                    </optgroup>
-                                    <optgroup label="Thiết bị lưu trữ">
-                                        <option value="hdd">HDD</option>
-                                        <option value="ssd">SSD</option>
+                                    <optgroup :key="optgr" :label="optgr" v-for="optgr in getOptgroup()">
+                                        <option :key="opt" :label="opt" v-for="opt in getOption()"></option>
                                     </optgroup>
                                 </select>
                                 <div
@@ -143,6 +135,7 @@
         data() {
             return {
                 name: '',
+                types: [],
                 type: '',
                 description: '',
                 price: 0,
@@ -150,6 +143,13 @@
                 message: '',
                 error: ''
             }
+        },
+        mounted() {
+            UserService.getPartTypes()
+                .then(response => response.json())
+                .then(res => {
+                    this.types = res;
+                })
         },
         methods: {
             onSubmitForm() {
@@ -184,6 +184,35 @@
                                 });
                     }
                 });
+            },
+            isEmpty(obj) {
+                for (let key in obj) {
+                    if (Object.prototype.hasOwnProperty.call(obj, key))
+                        return false;
+                }
+                return true;
+            },
+            getOptgroup() {
+                let optgroup = [];
+                for (let key in this.types) {
+                    if (Object.prototype.hasOwnProperty.call(this.types, key)) {
+                        if (this.types[key].check) {
+                            optgroup.push(this.types[key].name);
+                        }
+                    }
+                }
+                return optgroup;
+            },
+            getOption() {
+                let option = [];
+                for (let key in this.types) {
+                    if (Object.prototype.hasOwnProperty.call(this.types, key)) {
+                        if (!this.types[key].check) {
+                            option.push(this.types[key].name);
+                        }
+                    }
+                }
+                return option;
             }
         }
     }

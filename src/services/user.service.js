@@ -16,6 +16,12 @@ class UserService {
         })
     }
 
+    async getPartTypes() {
+        return await fetch(API_URL + '/part/type', {
+            headers: authHeader()
+        })
+    }
+
     async createPcPart(url = '', data = {}) {
         const response = await fetch(url, {
             method: 'POST',

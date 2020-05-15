@@ -11,8 +11,10 @@
                     </router-link>
                 </div>
                 <div style="margin: 10px"></div>
-                <input class="form-control col-sm-2" type="text" v-model="query" value=""/>
+                <label for="query"></label>
+                <input class="form-control col-sm-2" id="query" type="text" v-model="query" value=""/>
                 <div style="margin: 5px"></div>
+                <label for="type"></label>
                 <select class="form-control col-sm-2" id="type" v-model="type">
                     <option value="">-- Chọn linh kiện --</option>
                     <optgroup label="Linh kiện máy tính">
@@ -29,15 +31,14 @@
                 </select>
                 <div style="margin: 5px"></div>
                 <button @click="searchPart" class="btn btn-info">Tìm kiếm</button>
-
             </div>
-            <table class="table table-active" style="margin-top: 15px">
+            <table class="table table-striped table-bordered b-table-fixed" style="margin-top: 15px" v-if="hasData">
                 <thead>
                 <tr>
-                    <th>Tên linh kiện</th>
-                    <th>Loại linh kiện</th>
-                    <th>Giá</th>
-                    <th>Xử lý</th>
+                    <th style="width: 70%">Tên linh kiện</th>
+                    <th style="width: 10%">Loại linh kiện</th>
+                    <th style="width: 10%">Giá</th>
+                    <th style="width: 10%">Xử lý</th>
                 </tr>
                 </thead>
                 <tbody :key="part.type + part.id" v-bind:index="index" v-for="(part, index) in parts">
@@ -55,6 +56,7 @@
                 </tr>
                 </tbody>
             </table>
+            <div style="margin: 10px"></div>
             <span v-if="empty">Không có item nào!</span>
             <div style="margin: 10px"></div>
             <div v-if="totalPages > 0">
@@ -150,7 +152,8 @@
                 totalElements: 0,
                 query: '',
                 type: '',
-                empty: false
+                empty: false,
+                hasData: false
             };
         },
         mounted() {
@@ -159,6 +162,8 @@
                     return response.json()
                 }
             ).then((res) => {
+                this.empty = this.isEmpty(res.parts);
+                this.hasData = !this.isEmpty(res.parts);
                 this.parts = res.parts;
                 this.size = res.size;
                 this.page = res.page;
@@ -167,6 +172,8 @@
                 // eslint-disable-next-line no-unused-vars
             }).catch(e => {
             });
+
+
         },
         methods: {
             deletePart(id, index) {
@@ -188,6 +195,7 @@
                 UserService.searchPart('http://127.0.0.1:1025/endpoint/part/search?type=' + this.type + '&query=' + this.query + '&size=' + 10)
                     .then(res => {
                         this.empty = this.isEmpty(res.parts);
+                        this.hasData = !this.isEmpty(res.parts);
                         this.parts = res.parts;
                         this.size = res.size;
                         this.page = res.page;
@@ -250,15 +258,5 @@
     button[disabled] {
         color: #666666;
         cursor: not-allowed;
-    }
-
-    table {
-        width: 100%;
-    }
-
-    @media only screen and (min-width: 800px) {
-        table {
-            width: 100%;
-        }
     }
 </style>
