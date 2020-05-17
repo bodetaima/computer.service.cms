@@ -57,17 +57,11 @@
                                 <select class="form-control" id="type" name="type"
                                         v-model="type"
                                         v-validate="'required'">
-                                    <option disabled hidden value="">-- Chọn linh kiện --</option>
-                                    <optgroup label="Linh kiện máy tính">
-                                        <option value="mainboard">Mainboard</option>
-                                        <option value="cpu">CPU</option>
-                                        <option value="ram">RAM</option>
-                                        <option value="gpu">GPU</option>
-                                        <option value="psu">Nguồn</option>
-                                    </optgroup>
-                                    <optgroup label="Thiết bị lưu trữ">
-                                        <option value="hdd">HDD</option>
-                                        <option value="ssd">SSD</option>
+                                    <option disabled>-- Chọn linh kiện --</option>
+                                    <optgroup :key="optgroup.name" :label="optgroup.name" v-for="optgroup in types">
+                                        <option :key="option.type" :value="option.type"
+                                                v-for="option in optgroup.partTypeDtoList">{{ option.name }}
+                                        </option>
                                     </optgroup>
                                 </select>
                                 <div
@@ -131,11 +125,12 @@
     import UserService from '../../services/user.service';
 
     export default {
-        name: 'ComponentView',
+        name: 'PartView',
         components: {Navbar},
         data() {
             return {
                 name: '',
+                types: [],
                 type: '',
                 description: '',
                 price: 0,
@@ -196,7 +191,17 @@
                     this.description = res.description;
                     this.price = res.price;
                 }
-            )
+            ).then(() => {
+                UserService.getPartTypes()
+                    .then(response => response.json())
+                    .then(res => {
+                        for (let key in res.types) {
+                            if (Object.prototype.hasOwnProperty.call(res.types, key)) {
+                                this.types.push(res.types[key])
+                            }
+                        }
+                    })
+            })
         }
     }
 </script>

@@ -8,7 +8,7 @@
         <b-collapse class="justify-content-end" id="nav-collapse" is-nav>
             <b-navbar-nav>
                 <b-nav-item to="/">Trang chủ</b-nav-item>
-                <b-nav-item to="/components">Linh kiện máy tính</b-nav-item>
+                <b-nav-item to="/parts">Linh kiện máy tính</b-nav-item>
                 <b-nav-item to="/orders">Đơn hàng</b-nav-item>
                 <b-nav-item to="/computers">Máy tính</b-nav-item>
                 <b-nav-item to="/customers">Khách hàng</b-nav-item>

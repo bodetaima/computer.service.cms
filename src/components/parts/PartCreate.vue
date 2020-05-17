@@ -58,8 +58,10 @@
                                         v-model="type"
                                         v-validate="'required'">
                                     <option disabled hidden value="">-- Chọn linh kiện --</option>
-                                    <optgroup :key="optgr" :label="optgr" v-for="optgr in getOptgroup()">
-                                        <option :key="opt" :label="opt" v-for="opt in getOption()"></option>
+                                    <optgroup :key="optgroup.name" :label="optgroup.name" v-for="optgroup in types">
+                                        <option :key="option.type" :value="option.type"
+                                                v-for="option in optgroup.partTypeDtoList">{{ option.name }}
+                                        </option>
                                     </optgroup>
                                 </select>
                                 <div
@@ -130,7 +132,7 @@
     import UserService from '../../services/user.service';
 
     export default {
-        name: 'ComponentView',
+        name: 'PartCreate',
         components: {Navbar},
         data() {
             return {
@@ -148,7 +150,11 @@
             UserService.getPartTypes()
                 .then(response => response.json())
                 .then(res => {
-                    this.types = res;
+                    for (let key in res.types) {
+                        if (Object.prototype.hasOwnProperty.call(res.types, key)) {
+                            this.types.push(res.types[key])
+                        }
+                    }
                 })
         },
         methods: {
@@ -172,7 +178,7 @@
                                     this.error = '';
                                     this.message = 'Lưu thành công!'
                                     setTimeout(() => {
-                                        this.$router.push({"name": "Components"});
+                                        this.$router.push({"name": "Parts"});
                                     }, 1000);
                                 },
                                 error => {
@@ -191,28 +197,6 @@
                         return false;
                 }
                 return true;
-            },
-            getOptgroup() {
-                let optgroup = [];
-                for (let key in this.types) {
-                    if (Object.prototype.hasOwnProperty.call(this.types, key)) {
-                        if (this.types[key].check) {
-                            optgroup.push(this.types[key].name);
-                        }
-                    }
-                }
-                return optgroup;
-            },
-            getOption() {
-                let option = [];
-                for (let key in this.types) {
-                    if (Object.prototype.hasOwnProperty.call(this.types, key)) {
-                        if (!this.types[key].check) {
-                            option.push(this.types[key].name);
-                        }
-                    }
-                }
-                return option;
             }
         }
     }

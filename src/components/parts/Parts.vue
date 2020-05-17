@@ -4,7 +4,7 @@
         <div class="content table-responsive">
             <div style="display: flex">
                 <div>
-                    <router-link to="/component/create">
+                    <router-link to="/part/create">
                         <button class="btn btn-info">
                             Tạo mới linh kiện máy tính
                         </button>
@@ -17,16 +17,10 @@
                 <label for="type"></label>
                 <select class="form-control col-sm-2" id="type" v-model="type">
                     <option value="">-- Chọn linh kiện --</option>
-                    <optgroup label="Linh kiện máy tính">
-                        <option value="mainboard">Mainboard</option>
-                        <option value="cpu">CPU</option>
-                        <option value="ram">RAM</option>
-                        <option value="gpu">GPU</option>
-                        <option value="psu">Nguồn</option>
-                    </optgroup>
-                    <optgroup label="Thiết bị lưu trữ">
-                        <option value="hdd">HDD</option>
-                        <option value="ssd">SSD</option>
+                    <optgroup :key="optgroup.name" :label="optgroup.name" v-for="optgroup in types">
+                        <option :key="option.type" :value="option.type"
+                                v-for="option in optgroup.partTypeDtoList">{{ option.name }}
+                        </option>
                     </optgroup>
                 </select>
                 <div style="margin: 5px"></div>
@@ -44,8 +38,9 @@
                 <tbody :key="part.type + part.id" v-bind:index="index" v-for="(part, index) in parts">
                 <tr>
                     <td>
-                        <router-link :to="{ name: 'Components View', params: { type: part.type, id: part.id } }">{{
-                            part.name }}
+                        <router-link
+                                :to="{ name: 'PartView', params: { type: part.type, id: part.id } }">
+                            {{ part.name }}
                         </router-link>
                     </td>
                     <td>{{ part.type.toUpperCase() }}</td>
@@ -140,11 +135,12 @@
     import Navbar from "../Navbar";
 
     export default {
-        name: 'Components',
+        name: 'Parts',
         components: {Navbar},
         data() {
             return {
                 parts: [],
+                types: [],
                 size: 10,
                 page: 0,
                 inputPage: 1,
@@ -169,6 +165,17 @@
                 this.page = res.page;
                 this.totalPages = res.totalPages;
                 this.totalElements = res.totalElements;
+
+            }).then(() => {
+                UserService.getPartTypes()
+                    .then(response => response.json())
+                    .then(res => {
+                        for (let key in res.types) {
+                            if (Object.prototype.hasOwnProperty.call(res.types, key)) {
+                                this.types.push(res.types[key])
+                            }
+                        }
+                    })
                 // eslint-disable-next-line no-unused-vars
             }).catch(e => {
             });
@@ -177,7 +184,7 @@
         },
         methods: {
             deletePart(id, index) {
-                UserService.deletePart('http://127.0.0.1:1025/endpoint/part/' + '/' + id)
+                UserService.deletePart('http://127.0.0.1:1025/endpoint/part/' + id)
                     .then(() => {
                         this.parts.splice(index, 1);
                         alert("Xóa thành công!");
@@ -191,7 +198,6 @@
                 return true;
             },
             searchPart() {
-                console.log(this.type + ' ' + this.query);
                 UserService.searchPart('http://127.0.0.1:1025/endpoint/part/search?type=' + this.type + '&query=' + this.query + '&size=' + 10)
                     .then(res => {
                         this.empty = this.isEmpty(res.parts);
