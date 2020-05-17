@@ -111,8 +111,8 @@
                                 <span>Lưu</span>
                             </button>
                         </div>
-                        <div class="alert alert-success" role="alert" v-if="message">{{ message }}</div>
-                        <div class="alert alert-danger" role="alert" v-if="error">{{ error }}</div>
+                        <b-alert dismissible v-model="showSuccess" variant="success">{{ message }}</b-alert>
+                        <b-alert dismissible v-model="showError" variant="danger">{{ error }}</b-alert>
                     </div>
                 </div>
             </form>
@@ -136,7 +136,9 @@
                 price: 0,
                 loading: false,
                 message: '',
-                error: ''
+                showSuccess: false,
+                error: '',
+                showError: false
             }
         },
         methods: {
@@ -145,7 +147,8 @@
                 this.loading = true;
                 this.$validator.validateAll().then(isValid => {
                     if (!isValid) {
-                        this.error = 'Vui lòng nhập các trường còn thiếu!'
+                        this.error = 'Vui lòng nhập các trường còn thiếu!';
+                        this.showError = true;
                         this.loading = false;
                         return;
                     }
@@ -161,14 +164,18 @@
                         UserService.updatePartDetails('http://127.0.0.1:1025/endpoint/part', data)
                             .then(() => {
                                     this.loading = false;
+                                    this.showError = false;
                                     this.error = '';
+                                    this.showSuccess = true;
                                     this.message = 'Lưu thành công!'
                                     setTimeout(() => {
                                         this.message = '';
+                                        this.showSuccess = false;
                                     }, 3000);
                                 },
                                 error => {
                                     this.loading = false;
+                                    this.showError = true;
                                     this.error = 'Lưu không thành công. Lỗi: ' +
                                         ((error.response && error.response.data) ||
                                             error.message ||

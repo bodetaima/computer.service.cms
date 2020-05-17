@@ -10,7 +10,7 @@
                         </button>
                     </router-link>
                 </div>
-                <div style="margin: 10px"></div>
+                <div style="margin-left: 49.3%"></div>
                 <label for="query"></label>
                 <input class="form-control col-sm-2" id="query" type="text" v-model="query" value=""/>
                 <div style="margin: 5px"></div>
