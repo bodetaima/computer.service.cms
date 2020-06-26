@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Navbar/>
     <div class="content">
       <div style="display: flex">
         <div>
@@ -25,11 +24,9 @@
   </div>
 </template>
 <script>
-  import Navbar from "../Navbar";
 
   export default {
     name: "Orders",
-    components: {Navbar},
   };
 </script>
 <style scoped>

@@ -1,6 +1,5 @@
 <template>
     <div>
-        <Navbar/>
         <div class="content">
             <h1>{{content}}</h1>
         </div>
@@ -9,11 +8,9 @@
 
 <script>
     import UserService from '../services/user.service';
-    import Navbar from "./Navbar";
 
     export default {
         name: 'Home',
-        components: {Navbar},
         data() {
             return {
                 content: ''

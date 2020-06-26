@@ -1,6 +1,5 @@
 <template>
     <div>
-        <Navbar />
         <div class="container">
             <div class="py-5 text-center"></div>
             <form @submit.prevent="onSubmitForm">
@@ -127,12 +126,10 @@
     </div>
 </template>
 <script>
-import Navbar from "../Navbar";
 import UserService from "../../services/user.service";
 
 export default {
     name: "PartView",
-    components: { Navbar },
     props: {
         part: {
             type: Object,

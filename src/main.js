@@ -9,6 +9,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 import {faHome, faSignInAlt, faSignOutAlt, faUser, faUserPlus, faPlus, faSearch} from '@fortawesome/free-solid-svg-icons';
+import vuetify from './plugins/vuetify';
 
 
 library.add(faHome, faUser, faUserPlus, faSignInAlt, faSignOutAlt, faPlus, faSearch);
@@ -24,5 +25,6 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
-  render: h => h(App),
+  vuetify,
+  render: h => h(App)
 }).$mount('#app')
