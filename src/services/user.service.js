@@ -10,14 +10,14 @@ class UserService {
         });
     }
 
-    async getPCParts(size, page) {
-        return await fetch(API_URL + '/part?size=' + size + '&page=' + page, {
+    async getPCParts() {
+        return await fetch(API_URL + '/api/parts', {
             headers: authHeader()
         })
     }
 
     async getPartTypes() {
-        return await fetch(API_URL + '/part/type', {
+        return await fetch(API_URL + '/api/types', {
             headers: authHeader()
         })
     }

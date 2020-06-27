@@ -3,7 +3,7 @@
         <v-navigation-drawer v-model="drawer" app>
             <v-list dense>
                 <router-link to="/">
-                    <v-list-item link>
+                    <v-list-item link @click="drawer = !drawer">
                         <v-list-item-action>
                             <v-icon>mdi-home</v-icon>
                         </v-list-item-action>
@@ -13,7 +13,7 @@
                     </v-list-item>
                 </router-link>
                 <router-link to="/parts">
-                    <v-list-item link>
+                    <v-list-item link @click="drawer = !drawer">
                         <v-list-item-action>
                             <v-icon>mdi-layers</v-icon>
                         </v-list-item-action>
@@ -22,7 +22,7 @@
                         </v-list-item-content>
                     </v-list-item>
                 </router-link>
-                <v-list-item link @click.prevent="logOut">
+                <v-list-item link @click.prevent="logOut(); drawer = !drawer">
                     <v-list-item-action>
                         <v-icon>mdi-logout-variant</v-icon>
                     </v-list-item-action>
