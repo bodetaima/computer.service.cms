@@ -22,6 +22,14 @@
                         </v-list-item-content>
                     </v-list-item>
                 </router-link>
+                <v-list-item link @click.prevent="logOut">
+                    <v-list-item-action>
+                        <v-icon>mdi-logout-variant</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Đăng xuất</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
 
@@ -32,7 +40,7 @@
 
         <v-main>
             <v-container fluid>
-                    <router-view></router-view>
+                <router-view></router-view>
             </v-container>
         </v-main>
     </v-app>
@@ -45,6 +53,17 @@ export default {
         return {
             drawer: false,
         };
+    },
+    computed: {
+        currentUser() {
+            return this.$store.state.auth.user;
+        },
+    },
+    methods: {
+        logOut() {
+            this.$store.dispatch("auth/logout");
+            this.$router.push("/login");
+        },
     },
 };
 </script>

@@ -1,4 +1,4 @@
-const API_URL = 'http://127.0.0.1:1025/endpoint/authentication';
+const API_URL = 'http://localhost:1025/api/auth';
 
 class AuthService {
 
@@ -24,7 +24,7 @@ class AuthService {
             password: user.password
         })
             .then(response => {
-                if (response.token) {
+                if (response.accessToken) {
                     localStorage.setItem('user', JSON.stringify(response));
                 }
                 return response;

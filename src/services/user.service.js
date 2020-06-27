@@ -1,11 +1,11 @@
 import authHeader from "./auth-header";
 
-const API_URL = 'http://127.0.0.1:1025/endpoint';
+const API_URL = 'http://localhost:1025';
 
 class UserService {
 
     async getIndex() {
-        return await fetch(API_URL + '/index', {
+        return await fetch(API_URL, {
             headers: authHeader()
         });
     }
