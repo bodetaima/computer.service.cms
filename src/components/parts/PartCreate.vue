@@ -1,4 +1,20 @@
-<template><div></div></template>
+<template>
+    <v-container>
+        <form>
+            <v-text-field v-model="name" label="Tên linh kiện" :rules="nameRules" required></v-text-field>
+            <v-select :items="types" :rules="typeRules" v-model="type" label="Loại linh kiện"> </v-select>
+            <v-text-field
+                type="number"
+                v-model="price"
+                label="Giá linh kiện"
+                min="0"
+                :rules="priceRules"
+                required
+            ></v-text-field>
+            <v-textarea name="input-7-1" v-model="description" :rules="descRules" label="Mô tả linh kiện"></v-textarea>
+        </form>
+    </v-container>
+</template>
 <script>
 import UserService from "../../services/user.service";
 
@@ -7,66 +23,60 @@ export default {
     data() {
         return {
             name: "",
+            nameRules: [(v) => !!v || "Tên linh kiện không được để trống!"],
             types: [],
+            typeRules: [(v) => !!v || "Loại linh kiện không được để trống!"],
             type: "",
             description: "",
+            descRules: [(v) => !!v || "Mô tả linh kiện không được để trống!"],
             price: 0,
-            loading: false,
+            priceRules: [
+                (v) => !!v || "Giá linh kiện không được để trống!",
+                (v) => v > 0 || "Giá linh kiện không được âm hoặc bằng 0!",
+            ],
             message: "",
             showSuccess: false,
-            error: "",
             showError: false,
         };
     },
     mounted() {
-        UserService.getPartTypes()
+        UserService.getChildPartTypes()
             .then((response) => response.json())
             .then((res) => {
-                for (let key in res.types) {
-                    if (Object.prototype.hasOwnProperty.call(res.types, key)) {
-                        this.types.push(res.types[key]);
-                    }
-                }
+                this.types = res.map((r) => ({ text: r.name, value: r.type }));
             });
     },
     methods: {
         onSubmitForm() {
-            this.loading = true;
-            this.$validator.validateAll().then((isValid) => {
-                if (!isValid) {
-                    this.error = "Vui lòng nhập các trường còn thiếu!";
-                    this.showError = true;
-                    this.loading = false;
-                    return;
-                }
+            if (!this.type || !this.name || !this.description || !this.price) {
+                this.message = "Vui lòng nhập các trường còn thiếu!";
+                this.showError = true;
+                this.$emit("onFailState", this.showError, this.message);
+                return;
+            }
 
-                if (this.type && this.name && this.description && this.price) {
-                    const data = {
-                        type: this.type,
-                        name: this.name,
-                        price: this.price,
-                        description: this.description,
-                    };
-                    UserService.createPcPart("http://127.0.0.1:1025/endpoint/part", data).then(
-                        () => {
-                            this.showError = false;
-                            this.error = "";
-                            this.showSuccess = true;
-                            this.message = "Lưu thành công!";
-                            setTimeout(() => {
-                                this.$router.push({ name: "Parts" });
-                            }, 1000);
-                        },
-                        (error) => {
-                            this.loading = false;
-                            this.showError = true;
-                            this.error =
-                                "Lưu không thành công. Lỗi: " +
-                                ((error.response && error.response.data) || error.message || error.toString());
-                        }
-                    );
-                }
-            });
+            if (this.type && this.name && this.description && this.price) {
+                const data = {
+                    name: this.name,
+                    type: this.type,
+                    price: this.price,
+                    description: this.description,
+                };
+                UserService.createPcPart("http://localhost:1025/api/parts", data).then(
+                    () => {
+                        this.showSuccess = true;
+                        this.message = "Lưu thành công!";
+                        this.$emit("onSuccessState", this.showSuccess, this.message);
+                    },
+                    (error) => {
+                        this.showError = true;
+                        this.message =
+                            "Lưu không thành công. Lỗi: " +
+                            ((error.response && error.response.data) || error.message || error.toString());
+                        this.$emit("onFailState", this.showError, this.message);
+                    }
+                );
+            }
         },
         isEmpty(obj) {
             for (let key in obj) {

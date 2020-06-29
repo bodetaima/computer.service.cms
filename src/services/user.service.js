@@ -1,82 +1,84 @@
 import authHeader from "./auth-header";
 
-const API_URL = 'http://192.168.1.20:1025';
+// const API_URL = 'http://192.168.1.20:1025';
+// const API_URL = 'http://192.168.2.196:1025';
+const API_URL = "http://localhost:1025";
 
 class UserService {
-
     async getIndex() {
         return await fetch(API_URL, {
-            headers: authHeader()
+            headers: authHeader(),
         });
     }
 
-    async getPCParts() {
-        return await fetch(API_URL + '/api/parts', {
-            headers: authHeader()
-        })
+    async getPCParts(name = "", type = []) {
+        return await fetch(API_URL + "/api/parts?name=" + name + "&type=" + type.toString(), {
+            headers: authHeader(),
+        });
     }
 
     async getPartTypes() {
-        return await fetch(API_URL + '/api/types', {
-            headers: authHeader()
-        })
+        return await fetch(API_URL + "/api/types", {
+            headers: authHeader(),
+        });
     }
 
-    async createPcPart(url = '', data = {}) {
-        const response = await fetch(url, {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
+    async getChildPartTypes() {
+        return await fetch(API_URL + "/api/types/child", {
             headers: authHeader(),
-            redirect: 'follow',
-            referrerPolicy: 'no-referrer',
-            body: JSON.stringify(data)
+        });
+    }
+
+    async createPcPart(url = "", data = {}) {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: authHeader(),
+            body: JSON.stringify(data),
         });
         return response.json();
     }
 
     async getPartDetails(type, id) {
         return await fetch(API_URL + `/part/${type}/${id}`, {
-            headers: authHeader()
-        })
+            headers: authHeader(),
+        });
     }
 
-    async updatePartDetails(url = '', data = {}) {
+    async updatePartDetails(url = "", data = {}) {
         const response = await fetch(url, {
-            method: 'PUT',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
+            method: "PUT",
+            mode: "cors",
+            cache: "no-cache",
+            credentials: "same-origin",
             headers: authHeader(),
-            redirect: 'follow',
-            referrerPolicy: 'no-referrer',
-            body: JSON.stringify(data)
+            redirect: "follow",
+            referrerPolicy: "no-referrer",
+            body: JSON.stringify(data),
         });
         return response.json();
     }
 
-    async deletePart(url = '') {
+    async deletePart(url = "") {
         await fetch(url, {
-            method: 'DELETE',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
+            method: "DELETE",
+            mode: "cors",
+            cache: "no-cache",
+            credentials: "same-origin",
             headers: authHeader(),
-            redirect: 'follow',
-            referrerPolicy: 'no-referrer'
+            redirect: "follow",
+            referrerPolicy: "no-referrer",
         });
     }
 
-    async searchPart(url = '') {
+    async searchPart(url = "") {
         const response = await fetch(url, {
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
+            method: "GET",
+            mode: "cors",
+            cache: "no-cache",
+            credentials: "same-origin",
             headers: authHeader(),
-            redirect: 'follow',
-            referrerPolicy: 'no-referrer'
+            redirect: "follow",
+            referrerPolicy: "no-referrer",
         });
         return response.json();
     }

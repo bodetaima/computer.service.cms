@@ -1,5 +1,6 @@
-const API_URL = 'http://192.168.1.20:1025/api/auth';
-
+// const API_URL = 'http://192.168.1.20:1025/api/auth';
+// const API_URL = 'http://192.168.2.196:1025/api/auth';
+const API_URL = 'http://localhost:1025/api/auth';
 class AuthService {
 
     async postData(url = '', data = {}) {
