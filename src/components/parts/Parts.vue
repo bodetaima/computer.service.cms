@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-dialog v-model="dialog" persistent max-width="600px">
+        <v-dialog scrollable v-model="dialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
                 <v-btn depressed normal color="success" v-bind="attrs" v-on="on">
                     <v-icon>mdi-layers-search</v-icon> Tìm kiếm

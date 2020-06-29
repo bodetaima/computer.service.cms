@@ -1,6 +1,20 @@
 <template>
     <v-app>
-        <v-navigation-drawer v-model="drawer" app>
+        <v-navigation-drawer v-model="drawer" v-if="!loggedIn" app>
+            <v-list dense>
+                <router-link to="/login">
+                    <v-list-item link @click="drawer = !drawer">
+                        <v-list-item-action>
+                            <v-icon>mdi-login-variant</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Đăng nhập</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </router-link>
+            </v-list>
+        </v-navigation-drawer>
+        <v-navigation-drawer v-model="drawer" v-if="loggedIn" app>
             <v-list dense>
                 <router-link to="/">
                     <v-list-item link @click="drawer = !drawer">
@@ -22,7 +36,13 @@
                         </v-list-item-content>
                     </v-list-item>
                 </router-link>
-                <v-list-item link @click.prevent="logOut(); drawer = !drawer">
+                <v-list-item
+                    link
+                    @click.prevent="
+                        logOut();
+                        drawer = !drawer;
+                    "
+                >
                     <v-list-item-action>
                         <v-icon>mdi-logout-variant</v-icon>
                     </v-list-item-action>
@@ -57,6 +77,9 @@ export default {
     computed: {
         currentUser() {
             return this.$store.state.auth.user;
+        },
+        loggedIn() {
+            return this.$store.state.auth.status.loggedIn;
         },
     },
     methods: {
