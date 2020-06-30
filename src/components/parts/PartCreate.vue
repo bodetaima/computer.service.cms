@@ -51,7 +51,14 @@ export default {
             if (!this.type || !this.name || !this.description || !this.price) {
                 this.message = "Vui lòng nhập các trường còn thiếu!";
                 this.showError = true;
-                this.$emit("onFailState", this.showError, this.message);
+                this.$emit("submitFail", this.showError, this.message);
+                return;
+            }
+
+            if (this.price <= 0) {
+                this.message = "Giá linh kiện không thể âm hoặc bằng 0!";
+                this.showError = true;
+                this.$emit("submitFail", this.showError, this.message);
                 return;
             }
 
@@ -66,14 +73,14 @@ export default {
                     () => {
                         this.showSuccess = true;
                         this.message = "Lưu thành công!";
-                        this.$emit("onSuccessState", this.showSuccess, this.message);
+                        this.$emit("submitSuccess", this.showSuccess, this.message);
                     },
                     (error) => {
                         this.showError = true;
                         this.message =
                             "Lưu không thành công. Lỗi: " +
                             ((error.response && error.response.data) || error.message || error.toString());
-                        this.$emit("onFailState", this.showError, this.message);
+                        this.$emit("submitFail", this.showError, this.message);
                     }
                 );
             }

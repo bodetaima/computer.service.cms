@@ -11,10 +11,13 @@ class UserService {
         });
     }
 
-    async getPCParts(name = "", type = []) {
-        return await fetch(API_URL + "/api/parts?name=" + name + "&type=" + type.toString(), {
-            headers: authHeader(),
-        });
+    async getPCParts(name = "", type = [], size = 8, page = 1) {
+        return await fetch(
+            API_URL + "/api/parts?name=" + name + "&type=" + type.toString() + "&size=" + size + "&page=" + page,
+            {
+                headers: authHeader(),
+            }
+        );
     }
 
     async getPartTypes() {

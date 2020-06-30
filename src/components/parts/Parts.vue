@@ -1,10 +1,10 @@
 <template>
     <v-container>
-        <v-snackbar v-model="showSuccess" color="success" :timeout="2000" top>
-            {{ message }}
+        <v-snackbar v-model="showSuccess" color="success" :timeout="3000" top>
+            <v-icon>mdi-check-bold</v-icon> {{ message }}
         </v-snackbar>
-        <v-snackbar v-model="showError" color="error" :timeout="2000" top>
-            {{ message }}
+        <v-snackbar v-model="showError" color="error" :timeout="3000" top>
+            <v-icon>mdi-close-thick</v-icon> {{ message }}
         </v-snackbar>
         <v-dialog scrollable v-model="filterDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
@@ -44,7 +44,7 @@
                         color="blue darken-1"
                         text
                         @click="
-                            filterParts(name, selected);
+                            filterParts(name, selected, size, page);
                             filterDialog = false;
                         "
                         >Tìm kiếm</v-btn
@@ -59,7 +59,7 @@
             close
             @click:close="
                 name = '';
-                filterParts(name, selected);
+                filterParts(name, selected, size, page);
             "
         >
             {{ name }}
@@ -71,7 +71,7 @@
             close
             @click:close="
                 selected.splice(index, 1);
-                filterParts(name, selected);
+                filterParts(name, selected, size, page);
             "
         >
             {{ type }}
@@ -100,6 +100,13 @@
                 </tbody>
             </template>
         </v-simple-table>
+        <v-pagination
+            v-model="page"
+            v-if="totalPages > 0"
+            :length="totalPages"
+            :total-visible="7"
+            @input="filterParts(name, selected, size, page)"
+        ></v-pagination>
         <v-dialog scrollable v-model="createDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
                 <v-btn color="green" dark large fixed bottom right fab v-bind="attrs" v-on="on">
@@ -112,11 +119,7 @@
                 </v-card-title>
                 <v-card-text>
                     <v-container>
-                        <part-create
-                            ref="form"
-                            @onSuccessState="successState"
-                            @onFailState="failState"
-                        ></part-create>
+                        <part-create ref="form" @submitSuccess="success" @submitFail="fail"></part-create>
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
@@ -139,11 +142,9 @@ export default {
         return {
             parts: [],
             types: [],
-            size: 10,
-            page: 0,
-            inputPage: 1,
+            size: 8,
+            page: 1,
             totalPages: 0,
-            totalElements: 0,
             name: "",
             hasData: false,
             filterDialog: false,
@@ -162,7 +163,10 @@ export default {
             .then((res) => {
                 this.empty = this.isEmpty(res);
                 this.hasData = !this.isEmpty(res);
-                this.parts = res;
+                this.parts = res.parts;
+                this.size = res.size;
+                this.page = res.page;
+                this.totalPages = res.totalPages;
             })
             .then(() => {
                 UserService.getPartTypes()
@@ -181,28 +185,31 @@ export default {
             }
             return true;
         },
-        filterParts(name, type) {
-            UserService.getPCParts(name, type)
+        filterParts(name, type, size, page) {
+            UserService.getPCParts(name, type, size, page)
                 .then((response) => {
                     return response.json();
                 })
                 .then((res) => {
                     this.empty = this.isEmpty(res);
                     this.hasData = !this.isEmpty(res);
-                    this.parts = res;
+                    this.parts = res.parts;
+                    this.size = res.size;
+                    this.page = res.page;
+                    this.totalPages = res.totalPages;
                 });
         },
         submit() {
             this.$refs.form.onSubmitForm();
         },
-        successState(...value) {
+        success(...value) {
             let [state, message] = value;
             this.showSuccess = state;
             this.message = message;
             this.createDialog = false;
-            this.filterParts(this.name, this.selected);
+            this.filterParts(this.name, this.selected, this.size, this.page);
         },
-        failState(...value) {
+        fail(...value) {
             let [state, message] = value;
             this.showError = state;
             this.message = message;
