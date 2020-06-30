@@ -69,7 +69,7 @@ export default {
                     price: this.price,
                     description: this.description,
                 };
-                UserService.createPcPart("http://localhost:1025/api/parts", data).then(
+                UserService.createPcPart("http://192.168.1.20:1025/api/parts", data).then(
                     () => {
                         this.showSuccess = true;
                         this.message = "Lưu thành công!";

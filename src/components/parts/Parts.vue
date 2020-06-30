@@ -8,9 +8,22 @@
         </v-snackbar>
         <v-dialog scrollable v-model="filterDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
-                <v-btn depressed normal color="success" v-bind="attrs" v-on="on">
-                    <v-icon>mdi-layers-search</v-icon> Tìm kiếm
-                </v-btn>
+                <v-row class="mb-6" no-gutters>
+                    <v-col md="4">
+                        <v-btn depressed normal color="success" v-bind="attrs" v-on="on">
+                            <v-icon>mdi-layers-search</v-icon> Tìm kiếm
+                        </v-btn>
+                    </v-col>
+                    <v-col md="4" offset-md="4">
+                        <v-select
+                            :items="sortCondition"
+                            v-model="sort"
+                            label="Sắp xếp"
+                            @change="filterParts(name, selected, size, page, sort)"
+                        >
+                        </v-select>
+                    </v-col>
+                </v-row>
             </template>
             <v-card>
                 <v-card-title>
@@ -44,7 +57,7 @@
                         color="blue darken-1"
                         text
                         @click="
-                            filterParts(name, selected, size, page);
+                            filterParts(name, selected, size, page, sort);
                             filterDialog = false;
                         "
                         >Tìm kiếm</v-btn
@@ -59,7 +72,7 @@
             close
             @click:close="
                 name = '';
-                filterParts(name, selected, size, page);
+                filterParts(name, selected, size, page, sort);
             "
         >
             {{ name }}
@@ -71,7 +84,7 @@
             close
             @click:close="
                 selected.splice(index, 1);
-                filterParts(name, selected, size, page);
+                filterParts(name, selected, size, page, sort);
             "
         >
             {{ type }}
@@ -105,7 +118,8 @@
             v-if="totalPages > 0"
             :length="totalPages"
             :total-visible="7"
-            @input="filterParts(name, selected, size, page)"
+            color="green"
+            @input="filterParts(name, selected, size, page, sort)"
         ></v-pagination>
         <v-dialog scrollable v-model="createDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
@@ -119,7 +133,12 @@
                 </v-card-title>
                 <v-card-text>
                     <v-container>
-                        <part-create ref="form" @submitSuccess="success" @submitFail="fail"></part-create>
+                        <part-create
+                            :key="componentKey"
+                            ref="form"
+                            @submitSuccess="success"
+                            @submitFail="fail"
+                        ></part-create>
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
@@ -153,6 +172,26 @@ export default {
             showSuccess: false,
             showError: false,
             message: "",
+            sortCondition: [
+                {
+                    text: "Mới nhất",
+                    value: "",
+                },
+                {
+                    text: "Cũ nhất",
+                    value: "createdAsc",
+                },
+                {
+                    text: "Giá thấp nhất",
+                    value: "priceAsc",
+                },
+                {
+                    text: "Giá cao nhất",
+                    value: "priceDesc",
+                },
+            ],
+            sort: "",
+            componentKey: 0,
         };
     },
     mounted() {
@@ -185,8 +224,8 @@ export default {
             }
             return true;
         },
-        filterParts(name, type, size, page) {
-            UserService.getPCParts(name, type, size, page)
+        filterParts(name, type, size, page, sort) {
+            UserService.getPCParts(name, type, size, page, sort)
                 .then((response) => {
                     return response.json();
                 })
@@ -207,7 +246,8 @@ export default {
             this.showSuccess = state;
             this.message = message;
             this.createDialog = false;
-            this.filterParts(this.name, this.selected, this.size, this.page);
+            this.filterParts(this.name, this.selected, this.size, this.page, this.sort);
+            this.componentKey += 1;
         },
         fail(...value) {
             let [state, message] = value;

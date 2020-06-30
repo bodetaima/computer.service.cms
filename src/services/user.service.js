@@ -1,8 +1,8 @@
 import authHeader from "./auth-header";
 
-// const API_URL = 'http://192.168.1.20:1025';
+const API_URL = "http://192.168.1.20:1025";
 // const API_URL = 'http://192.168.2.196:1025';
-const API_URL = "http://localhost:1025";
+//const API_URL = "http://localhost:1025";
 
 class UserService {
     async getIndex() {
@@ -11,9 +11,19 @@ class UserService {
         });
     }
 
-    async getPCParts(name = "", type = [], size = 8, page = 1) {
+    async getPCParts(name = "", type = [], size = 5, page = 1, sort = "") {
         return await fetch(
-            API_URL + "/api/parts?name=" + name + "&type=" + type.toString() + "&size=" + size + "&page=" + page,
+            API_URL +
+                "/api/parts?name=" +
+                name +
+                "&type=" +
+                type.toString() +
+                "&size=" +
+                size +
+                "&page=" +
+                page +
+                "&sort=" +
+                sort,
             {
                 headers: authHeader(),
             }
