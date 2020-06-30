@@ -100,11 +100,37 @@
                     </tr>
                 </thead>
                 <tbody v-if="hasData">
-                    <tr v-for="part in parts" :key="part.id">
-                        <td>{{ part.name }}</td>
-                        <td>{{ part.type.name }}</td>
-                        <td>{{ part.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" }) }}</td>
-                    </tr>
+                    <v-dialog
+                        v-for="(part, index) in parts"
+                        :key="part.id"
+                        scrollable
+                        v-model="updateDialog[index]"
+                        persistent
+                        max-width="600px"
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                            <tr v-bind="attrs" v-on="on" style="cursor: pointer">
+                                <td>{{ part.name }}</td>
+                                <td>{{ part.type.name }}</td>
+                                <td>
+                                    {{ part.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" }) }}
+                                </td>
+                            </tr>
+                        </template>
+                        <v-card>
+                            <v-card-title>
+                                <span class="headline">Tạo linh kiện mới</span>
+                            </v-card-title>
+                            <v-card-text>
+                                <v-container> </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue darken-1" text @click="updateDialog[index] = false">Đóng</v-btn>
+                                <v-btn color="blue darken-1" text @click="submit">Lưu</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
                 </tbody>
                 <tbody v-else>
                     <tr>
@@ -168,6 +194,7 @@ export default {
             hasData: false,
             filterDialog: false,
             createDialog: false,
+            updateDialog: {},
             selected: [],
             showSuccess: false,
             showError: false,
