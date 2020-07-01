@@ -100,37 +100,49 @@
                     </tr>
                 </thead>
                 <tbody v-if="hasData">
-                    <v-dialog
-                        v-for="(part, index) in parts"
-                        :key="part.id"
-                        scrollable
-                        v-model="updateDialog[index]"
-                        persistent
-                        max-width="600px"
-                    >
-                        <template v-slot:activator="{ on, attrs }">
-                            <tr v-bind="attrs" v-on="on" style="cursor: pointer">
-                                <td>{{ part.name }}</td>
-                                <td>{{ part.type.name }}</td>
-                                <td>
-                                    {{ part.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" }) }}
-                                </td>
-                            </tr>
-                        </template>
-                        <v-card>
-                            <v-card-title>
-                                <span class="headline">Tạo linh kiện mới</span>
-                            </v-card-title>
-                            <v-card-text>
-                                <v-container> </v-container>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue darken-1" text @click="updateDialog[index] = false">Đóng</v-btn>
-                                <v-btn color="blue darken-1" text @click="submit">Lưu</v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-dialog>
+                    <tr v-for="(part, index) in parts" :key="part.id">
+                        <td>
+                            <v-dialog
+                                scrollable
+                                v-model="updateDialog[index]"
+                                persistent
+                                max-width="600px"
+                                @input="forceReloadUpdateComponent(index)"
+                            >
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn text small v-bind="attrs" v-on="on" color="primary">{{ part.name }}</v-btn>
+                                </template>
+                                <v-card>
+                                    <v-card-title>
+                                        <span class="headline">Sửa thông tin linh kiện</span>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <v-container>
+                                            <part-form
+                                                :key="updateComponentKey[index]"
+                                                :id="part.id"
+                                                ref="updateForms"
+                                                @updateSuccess="updateSuccess(index, ...arguments)"
+                                                @updateFail="updateFail"
+                                            >
+                                            </part-form>
+                                        </v-container>
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="blue darken-1" text @click="updateDialog[index] = false"
+                                            >Đóng</v-btn
+                                        >
+                                        <v-btn color="blue darken-1" text @click="updateSubmit(index)">Lưu</v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </td>
+                        <td>{{ part.type.name }}</td>
+                        <td>
+                            {{ part.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" }) }}
+                        </td>
+                    </tr>
                 </tbody>
                 <tbody v-else>
                     <tr>
@@ -147,7 +159,7 @@
             color="green"
             @input="filterParts(name, selected, size, page, sort)"
         ></v-pagination>
-        <v-dialog scrollable v-model="createDialog" persistent max-width="600px">
+        <v-dialog scrollable v-model="createDialog" persistent max-width="600px" @input="forceReloadCreateComponent">
             <template v-slot:activator="{ on, attrs }">
                 <v-btn color="green" dark large fixed bottom right fab v-bind="attrs" v-on="on">
                     <v-icon>mdi-plus</v-icon>
@@ -159,18 +171,18 @@
                 </v-card-title>
                 <v-card-text>
                     <v-container>
-                        <part-create
-                            :key="componentKey"
-                            ref="form"
-                            @submitSuccess="success"
-                            @submitFail="fail"
-                        ></part-create>
+                        <part-form
+                            :key="createComponentKey"
+                            ref="newForm"
+                            @createSuccess="createSuccess"
+                            @createFail="createFail"
+                        ></part-form>
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" text @click="createDialog = false">Đóng</v-btn>
-                    <v-btn color="blue darken-1" text @click="submit">Lưu</v-btn>
+                    <v-btn color="blue darken-1" text @click="createSubmit">Lưu</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -179,10 +191,11 @@
 
 <script>
 import UserService from "../../services/user.service";
-import PartCreate from "./PartCreate";
+import PartForm from "./PartForm";
+
 export default {
     name: "Parts",
-    components: { PartCreate },
+    components: { PartForm },
     data() {
         return {
             parts: [],
@@ -218,7 +231,9 @@ export default {
                 },
             ],
             sort: "",
-            componentKey: 0,
+            createComponentKey: 0,
+            updateComponentKey: {},
+            keyIter: 0,
         };
     },
     mounted() {
@@ -265,21 +280,42 @@ export default {
                     this.totalPages = res.totalPages;
                 });
         },
-        submit() {
-            this.$refs.form.onSubmitForm();
+        createSubmit() {
+            this.$refs.newForm.onCreatePart();
         },
-        success(...value) {
+        updateSubmit(index) {
+            this.$refs.updateForms[index].onUpdatePart();
+        },
+        createSuccess(...value) {
             let [state, message] = value;
             this.showSuccess = state;
             this.message = message;
             this.createDialog = false;
             this.filterParts(this.name, this.selected, this.size, this.page, this.sort);
-            this.componentKey += 1;
         },
-        fail(...value) {
+        createFail(...value) {
             let [state, message] = value;
             this.showError = state;
             this.message = message;
+        },
+        updateSuccess(index, ...value) {
+            let [state, message] = value;
+            this.showSuccess = state;
+            this.message = message;
+            this.updateDialog[index] = false;
+            this.filterParts(this.name, this.selected, this.size, this.page, this.sort);
+        },
+        updateFail(...value) {
+            let [state, message] = value;
+            this.showError = state;
+            this.message = message;
+        },
+        forceReloadCreateComponent() {
+            this.createComponentKey += 1;
+        },
+        forceReloadUpdateComponent(i) {
+            this.keyIter += 1;
+            this.updateComponentKey[i] = this.keyIter;
         },
     },
 };

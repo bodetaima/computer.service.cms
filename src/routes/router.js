@@ -2,9 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 import Home from "../components/Home";
 import Parts from "../components/parts/Parts";
-import PartCreate from "../components/parts/PartCreate";
 import Login from "../components/auth/Login";
-import PartView from "../components/parts/PartView";
 import Orders from "../components/orders/Orders";
 import CreateOrder from "../components/orders/CreateOrder";
 import Profile from "../components/auth/Profile";
@@ -30,23 +28,6 @@ export const router = new Router({
             component: Parts,
             meta: {
                 title: "Linh kiện máy tính - WeFixIt",
-            },
-        },
-        {
-            path: "/part/create",
-            name: "PartCreate",
-            component: PartCreate,
-            meta: {
-                title: "Tạo linh kiện máy tính mới - WeFixIt",
-            },
-        },
-        {
-            path: "/part/:type/:id",
-            name: "PartView",
-            component: PartView,
-            props: (route) => ({ part: route.params.part, types: route.params.types }),
-            meta: {
-                title: "Sửa thông tin phụ kiện - WeFixIt",
             },
         },
         {
