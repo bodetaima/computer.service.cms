@@ -121,7 +121,7 @@
                                             <part-form
                                                 :key="updateComponentKey[index]"
                                                 :id="part.id"
-                                                ref="updateForms"
+                                                :ref="'updateForm' + index"
                                                 @updateSuccess="updateSuccess(index, ...arguments)"
                                                 @updateFail="updateFail"
                                             >
@@ -284,7 +284,7 @@ export default {
             this.$refs.newForm.onCreatePart();
         },
         updateSubmit(index) {
-            this.$refs.updateForms[index].onUpdatePart();
+            this.$refs['updateForm' + index][0].onUpdatePart();
         },
         createSuccess(...value) {
             let [state, message] = value;
