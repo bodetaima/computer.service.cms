@@ -50,7 +50,6 @@
 </template>
 <script>
 import ComputerCreate from "../computers/ComputerCreate";
-import UserService from "../../services/user.service";
 
 export default {
     name: "CreateOrder",
@@ -78,19 +77,6 @@ export default {
         },
     },
     created() {
-        UserService.getPCParts(10, 0)
-            .then((response) => {
-                return response.json();
-            })
-            .then((res) => {
-                this.parts = res.parts;
-                this.size = res.size;
-                this.page = res.page;
-                this.totalPages = res.totalPages;
-                this.totalElements = res.totalElements;
-            })
-            // eslint-disable-next-line no-unused-vars
-            .catch((e) => {});
     },
 };
 </script>

@@ -2,8 +2,13 @@
     <v-container>
         <form>
             <v-text-field v-model="name" label="Tên linh kiện" :rules="nameRules" required></v-text-field>
-            <v-select :items="types" :readonly="update" :rules="typeRules" v-model="type" label="Loại linh kiện">
-            </v-select>
+            <v-select
+                :items="types"
+                :readonly="update"
+                :rules="typeRules"
+                v-model="type"
+                label="Loại linh kiện"
+            ></v-select>
             <v-text-field
                 type="number"
                 v-model="price"
@@ -17,7 +22,8 @@
     </v-container>
 </template>
 <script>
-import UserService from "../../services/user.service";
+import { API_URL } from "../../services/request.service";
+import authHeader from "../../services/auth-header";
 
 export default {
     name: "PartForm",
@@ -47,14 +53,40 @@ export default {
         };
     },
     mounted() {
-        UserService.getChildPartTypes()
-            .then((response) => response.json())
-            .then((res) => {
-                this.types = res.map((r) => ({ text: r.name, value: r.type }));
-            });
+        this.getChildPartTypes();
         if (this.id) {
-            UserService.getPartDetails(this.id)
-                .then((response) => response.json())
+            this.getPartDetails(this.id);
+        }
+    },
+    methods: {
+        async getChildPartTypes() {
+            return await fetch(API_URL + "types/child", {
+                headers: authHeader(),
+            })
+                .then((response) => {
+                    if (response.status === 401) {
+                        this.$store.dispatch("auth/logout");
+                        this.$router.push("/login");
+                    }
+
+                    return response.json();
+                })
+                .then((res) => {
+                    this.types = res.map((r) => ({ text: r.name, value: r.type }));
+                });
+        },
+        async getPartDetails(id) {
+            return await fetch(API_URL + `parts/${id}`, {
+                headers: authHeader(),
+            })
+                .then((response) => {
+                    if (response.status === 401) {
+                        this.$store.dispatch("auth/logout");
+                        this.$router.push("/login");
+                    }
+
+                    return response.json();
+                })
                 .then((res) => {
                     this.update = true;
                     this.name = res.name;
@@ -62,10 +94,8 @@ export default {
                     this.price = res.price;
                     this.description = res.description;
                 });
-        }
-    },
-    methods: {
-        onCreatePart() {
+        },
+        async onCreatePart() {
             if (!this.type || !this.name || !this.description || !this.price) {
                 this.message = "Vui lòng nhập các trường còn thiếu!";
                 this.showError = true;
@@ -87,23 +117,36 @@ export default {
                     price: this.price,
                     description: this.description,
                 };
-                UserService.createPcPart(data).then(
-                    () => {
-                        this.showSuccess = true;
-                        this.message = "Lưu thành công!";
-                        this.$emit("createSuccess", this.showSuccess, this.message);
-                    },
-                    (error) => {
-                        this.showError = true;
-                        this.message =
-                            "Lưu không thành công. Lỗi: " +
-                            ((error.response && error.response.data) || error.message || error.toString());
-                        this.$emit("createFail", this.showError, this.message);
-                    }
-                );
+                await fetch(API_URL + "parts", {
+                    method: "POST",
+                    headers: authHeader(),
+                    body: JSON.stringify(data),
+                })
+                    .then((response) => {
+                        if (response.status === 401) {
+                            this.$store.dispatch("auth/logout");
+                            this.$router.push("/login");
+                        }
+
+                        return response.json();
+                    })
+                    .then(
+                        () => {
+                            this.showSuccess = true;
+                            this.message = "Lưu thành công!";
+                            this.$emit("createSuccess", this.showSuccess, this.message);
+                        },
+                        (error) => {
+                            this.showError = true;
+                            this.message =
+                                "Lưu không thành công. Lỗi: " +
+                                ((error.response && error.response.data) || error.message || error.toString());
+                            this.$emit("createFail", this.showError, this.message);
+                        }
+                    );
             }
         },
-        onUpdatePart() {
+        async onUpdatePart() {
             if (!this.type || !this.name || !this.description || !this.price) {
                 this.message = "Vui lòng nhập các trường còn thiếu!";
                 this.showError = true;
@@ -124,20 +167,33 @@ export default {
                     price: this.price,
                     description: this.description,
                 };
-                UserService.updatePartDetails(this.id, data).then(
-                    () => {
-                        this.showSuccess = true;
-                        this.message = "Lưu thành công!";
-                        this.$emit("updateSuccess", this.showSuccess, this.message);
-                    },
-                    (error) => {
-                        this.showError = true;
-                        this.message =
-                            "Lưu không thành công. Lỗi: " +
-                            ((error.response && error.response.data) || error.message || error.toString());
-                        this.$emit("updateFail", this.showError, this.message);
-                    }
-                );
+                await fetch(API_URL + `parts/${this.id}`, {
+                    method: "PUT",
+                    headers: authHeader(),
+                    body: JSON.stringify(data),
+                })
+                    .then((response) => {
+                        if (response.status === 401) {
+                            this.$store.dispatch("auth/logout");
+                            this.$router.push("/login");
+                        }
+
+                        return response.json();
+                    })
+                    .then(
+                        () => {
+                            this.showSuccess = true;
+                            this.message = "Lưu thành công!";
+                            this.$emit("updateSuccess", this.showSuccess, this.message);
+                        },
+                        (error) => {
+                            this.showError = true;
+                            this.message =
+                                "Lưu không thành công. Lỗi: " +
+                                ((error.response && error.response.data) || error.message || error.toString());
+                            this.$emit("updateFail", this.showError, this.message);
+                        }
+                    );
             }
         },
         isEmpty(obj) {

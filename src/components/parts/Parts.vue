@@ -1,17 +1,19 @@
 <template>
     <v-container>
         <v-snackbar v-model="showSuccess" color="success" :timeout="3000" top>
-            <v-icon>mdi-check-bold</v-icon> {{ message }}
+            <v-icon>mdi-check-bold</v-icon>
+            {{ message }}
         </v-snackbar>
         <v-snackbar v-model="showError" color="error" :timeout="3000" top>
-            <v-icon>mdi-close-thick</v-icon> {{ message }}
+            <v-icon>mdi-close-thick</v-icon>
+            {{ message }}
         </v-snackbar>
         <v-dialog scrollable v-model="filterDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
                 <v-row class="mb-6" no-gutters>
                     <v-col md="4">
                         <v-btn depressed normal color="success" v-bind="attrs" v-on="on">
-                            <v-icon>mdi-layers-search</v-icon> Tìm kiếm
+                            <v-icon>mdi-layers-search</v-icon>Tìm kiếm
                         </v-btn>
                     </v-col>
                     <v-col md="4" offset-md="4">
@@ -19,9 +21,8 @@
                             :items="sortCondition"
                             v-model="sort"
                             label="Sắp xếp"
-                            @change="filterParts(name, selected, size, page, sort)"
-                        >
-                        </v-select>
+                            @change="getPCParts(name, selected, size, page, sort)"
+                        ></v-select>
                     </v-col>
                 </v-row>
             </template>
@@ -57,7 +58,7 @@
                         color="blue darken-1"
                         text
                         @click="
-                            filterParts(name, selected, size, page, sort);
+                            getPCParts(name, selected, size, page, sort);
                             filterDialog = false;
                         "
                         >Tìm kiếm</v-btn
@@ -72,11 +73,10 @@
             close
             @click:close="
                 name = '';
-                filterParts(name, selected, size, page, sort);
+                getPCParts(name, selected, size, page, sort);
             "
+            >{{ name }}</v-chip
         >
-            {{ name }}
-        </v-chip>
         <v-chip
             v-for="(type, index) in selected"
             :key="index"
@@ -84,11 +84,10 @@
             close
             @click:close="
                 selected.splice(index, 1);
-                filterParts(name, selected, size, page, sort);
+                getPCParts(name, selected, size, page, sort);
             "
+            >{{ type }}</v-chip
         >
-            {{ type }}
-        </v-chip>
         <v-spacer></v-spacer>
         <v-simple-table>
             <template v-slot:default>
@@ -124,8 +123,7 @@
                                                 :ref="'updateForm' + index"
                                                 @updateSuccess="updateSuccess(index, ...arguments)"
                                                 @updateFail="updateFail"
-                                            >
-                                            </part-form>
+                                            ></part-form>
                                         </v-container>
                                     </v-card-text>
                                     <v-card-actions>
@@ -139,9 +137,7 @@
                             </v-dialog>
                         </td>
                         <td>{{ part.type.name }}</td>
-                        <td>
-                            {{ part.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" }) }}
-                        </td>
+                        <td>{{ part.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" }) }}</td>
                     </tr>
                 </tbody>
                 <tbody v-else>
@@ -157,7 +153,7 @@
             :length="totalPages"
             :total-visible="7"
             color="green"
-            @input="filterParts(name, selected, size, page, sort)"
+            @input="getPCParts(name, selected, size, page, sort)"
         ></v-pagination>
         <v-dialog scrollable v-model="createDialog" persistent max-width="600px" @input="forceReloadCreateComponent">
             <template v-slot:activator="{ on, attrs }">
@@ -190,8 +186,9 @@
 </template>
 
 <script>
-import UserService from "../../services/user.service";
+import { API_URL } from "../../services/request.service";
 import PartForm from "./PartForm";
+import authHeader from "../../services/auth-header";
 
 export default {
     name: "Parts",
@@ -237,27 +234,8 @@ export default {
         };
     },
     mounted() {
-        UserService.getPCParts()
-            .then((response) => {
-                return response.json();
-            })
-            .then((res) => {
-                this.empty = this.isEmpty(res);
-                this.hasData = !this.isEmpty(res);
-                this.parts = res.parts;
-                this.size = res.size;
-                this.page = res.page;
-                this.totalPages = res.totalPages;
-            })
-            .then(() => {
-                UserService.getPartTypes()
-                    .then((response) => response.json())
-                    .then((res) => {
-                        this.types = res;
-                    });
-            })
-            // eslint-disable-next-line no-unused-vars
-            .catch((e) => {});
+        this.getPCParts(this.name, this.selected, 5, 1, this.sort);
+        this.getPartTypes();
     },
     methods: {
         isEmpty(obj) {
@@ -266,9 +244,29 @@ export default {
             }
             return true;
         },
-        filterParts(name, type, size, page, sort) {
-            UserService.getPCParts(name, type, size, page, sort)
+        async getPCParts(name = "", type = [], size = 5, page = 1, sort = "") {
+            await fetch(
+                API_URL +
+                    "parts?name=" +
+                    name +
+                    "&type=" +
+                    type.toString() +
+                    "&size=" +
+                    size +
+                    "&page=" +
+                    page +
+                    "&sort=" +
+                    sort,
+                {
+                    headers: authHeader(),
+                }
+            )
                 .then((response) => {
+                    if (response.status === 401) {
+                        this.$store.dispatch("auth/logout");
+                        this.$router.push("/login");
+                        return;
+                    }
                     return response.json();
                 })
                 .then((res) => {
@@ -280,18 +278,33 @@ export default {
                     this.totalPages = res.totalPages;
                 });
         },
+        async getPartTypes() {
+            await fetch(API_URL + "types", {
+                headers: authHeader(),
+            })
+                .then((response) => {
+                    if (response.status === 401) {
+                        this.$store.dispatch("auth/logout");
+                        this.$router.push("/login");
+                    }
+                    return response.json();
+                })
+                .then((res) => {
+                    this.types = res;
+                });
+        },
         createSubmit() {
             this.$refs.newForm.onCreatePart();
         },
         updateSubmit(index) {
-            this.$refs['updateForm' + index][0].onUpdatePart();
+            this.$refs["updateForm" + index][0].onUpdatePart();
         },
         createSuccess(...value) {
             let [state, message] = value;
             this.showSuccess = state;
             this.message = message;
             this.createDialog = false;
-            this.filterParts(this.name, this.selected, this.size, this.page, this.sort);
+            this.getPCParts(this.name, this.selected, this.size, this.page, this.sort);
         },
         createFail(...value) {
             let [state, message] = value;
@@ -303,7 +316,7 @@ export default {
             this.showSuccess = state;
             this.message = message;
             this.updateDialog[index] = false;
-            this.filterParts(this.name, this.selected, this.size, this.page, this.sort);
+            this.getPCParts(this.name, this.selected, this.size, this.page, this.sort);
         },
         updateFail(...value) {
             let [state, message] = value;
