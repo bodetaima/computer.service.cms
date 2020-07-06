@@ -74,6 +74,9 @@ export default {
             drawer: false,
         };
     },
+    mounted() {
+        console.log(this.$store);
+    },
     computed: {
         currentUser() {
             return this.$store.state.auth.user;

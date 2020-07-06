@@ -1,6 +1,5 @@
-// const API_URL = "http://192.168.1.20:1025/api/auth";
-// const API_URL = 'http://192.168.2.196:1025/api/auth';
-const API_URL = 'http://localhost:1025/api/auth';
+import { AUTH_URL } from "./request.service";
+
 class AuthService {
     async postData(url = "", data = {}) {
         const response = await fetch(url, {
@@ -18,8 +17,8 @@ class AuthService {
         return response.json();
     }
 
-    login(user) {
-        return this.postData(API_URL + "/signin", {
+    async login(user) {
+        return this.postData(AUTH_URL + "signin", {
             username: user.username,
             password: user.password,
         }).then((response) => {
@@ -35,7 +34,7 @@ class AuthService {
     }
 
     register(user) {
-        return this.postData(API_URL + "/signup", {
+        return this.postData(AUTH_URL + "signup", {
             username: user.username,
             email: user.email,
             password: user.password,
