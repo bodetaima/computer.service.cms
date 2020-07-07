@@ -13,8 +13,8 @@ export default {
             }
         );
     },
-    getParts({ commit }) {
-        return PartsService.getParts().then(
+    getParts({ commit }, { name, types, size, page, sort }) {
+        return PartsService.getParts(name, types, size, page, sort).then(
             (parts) => {
                 commit(GET_PARTS_SUCCESS, parts);
                 return Promise.resolve(parts);

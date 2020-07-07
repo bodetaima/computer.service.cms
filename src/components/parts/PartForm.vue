@@ -3,7 +3,7 @@
         <form>
             <v-text-field v-model="name" label="Tên linh kiện" :rules="nameRules" required></v-text-field>
             <v-select
-                :items="types"
+                :items="childTypes"
                 :readonly="update"
                 :rules="typeRules"
                 v-model="type"
@@ -31,12 +31,14 @@ export default {
         id: {
             type: String,
         },
+        types: {
+            type: Array,
+        },
     },
     data() {
         return {
             name: "",
             nameRules: [(v) => !!v || "Tên linh kiện không được để trống!"],
-            types: [],
             typeRules: [(v) => !!v || "Loại linh kiện không được để trống!"],
             type: "",
             description: "",
@@ -53,28 +55,16 @@ export default {
         };
     },
     mounted() {
-        this.getChildPartTypes();
         if (this.id) {
             this.getPartDetails(this.id);
         }
     },
-    methods: {
-        async getChildPartTypes() {
-            return await fetch(API_URL + "types/child", {
-                headers: authHeader(),
-            })
-                .then((response) => {
-                    if (response.status === 401) {
-                        this.$store.dispatch("auth/logout");
-                        this.$router.push("/login");
-                    }
-
-                    return response.json();
-                })
-                .then((res) => {
-                    this.types = res.map((r) => ({ text: r.name, value: r.type }));
-                });
+    computed: {
+        childTypes() {
+            return this.types.map((type) => ({ text: type.name, value: type.type }));
         },
+    },
+    methods: {
         async getPartDetails(id) {
             return await fetch(API_URL + `parts/${id}`, {
                 headers: authHeader(),

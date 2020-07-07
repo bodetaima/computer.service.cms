@@ -27,18 +27,12 @@ class PartsService {
 
     async getParts(name = "", types = [], size = 5, page = 0, sort = "") {
         return this.getData(
-            API_URL +
-                "parts?name=" +
-                name +
-                "&types=" +
-                types.toString() +
-                "&size=" +
-                size +
-                "&page=" +
-                page +
-                "&sort=" +
-                sort
+            API_URL + `parts?name=${name}&types=${types.toString()}&size=${size}&page=${page}&sort=${sort}`
         ).then((response) => response);
+    }
+
+    async getPartDetail(id) {
+        return this.getData(API_URL + `parts/${id}`);
     }
 }
 

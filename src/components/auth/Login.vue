@@ -18,7 +18,7 @@
 
 <script>
 import LoginUser from "../../models/LoginUser";
-
+import { mapState, mapActions } from "vuex";
 export default {
     name: "Login",
     data() {
@@ -30,9 +30,9 @@ export default {
         };
     },
     computed: {
-        loggedIn() {
-            return this.$store.state.auth.status.loggedIn;
-        },
+        ...mapState({
+            loggedIn: (store) => store.auth.status.loggedIn,
+        }),
     },
     created() {
         if (this.loggedIn) {
@@ -40,10 +40,13 @@ export default {
         }
     },
     methods: {
+        ...mapActions({
+            login: "auth/login",
+        }),
         handleLogin() {
             this.loading = true;
             if (this.user.username && this.user.password) {
-                this.$store.dispatch("auth/login", this.user).then(
+                this.login(this.user).then(
                     () => {
                         this.$router.push("/");
                     },

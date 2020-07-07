@@ -66,6 +66,8 @@
     </v-app>
 </template>
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
     name: "App",
     components: {},
@@ -74,20 +76,18 @@ export default {
             drawer: false,
         };
     },
-    mounted() {
-        console.log(this.$store);
-    },
     computed: {
-        currentUser() {
-            return this.$store.state.auth.user;
-        },
-        loggedIn() {
-            return this.$store.state.auth.status.loggedIn;
-        },
+        ...mapState({
+            currentUser: (store) => store.auth.user,
+            loggedIn: (store) => store.auth.status.loggedIn,
+        }),
     },
     methods: {
+        ...mapActions({
+            logOutAction: "auth/logout",
+        }),
         logOut() {
-            this.$store.dispatch("auth/logout");
+            this.logOutAction();
             this.$router.push("/login");
         },
     },

@@ -17,7 +17,12 @@
                         </v-btn>
                     </v-col>
                     <v-col md="4" offset-md="4">
-                        <v-select :items="sortCondition" v-model="sort" label="Sắp xếp"></v-select>
+                        <v-select
+                            :items="sortCondition"
+                            v-model="sort"
+                            label="Sắp xếp"
+                            @change="getParts(name, selected, parts.size, parts.page, sort)"
+                        ></v-select>
                     </v-col>
                 </v-row>
             </template>
@@ -49,18 +54,38 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" text @click="filterDialog = false">Đóng</v-btn>
-                    <v-btn color="blue darken-1" text @click="filterDialog = false">Tìm kiếm</v-btn>
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="
+                            getParts(name, selected, parts.size, parts.page, sort);
+                            filterDialog = false;
+                        "
+                        >Tìm kiếm</v-btn
+                    >
                 </v-card-actions>
             </v-card>
         </v-dialog>
         <v-spacer></v-spacer>
-        <v-chip v-if="name !== ''" class="ma-2" close @click:close="name = ''">{{ name }}</v-chip>
+        <v-chip
+            v-if="name !== ''"
+            class="ma-2"
+            close
+            @click:close="
+                name = '';
+                getParts(name, selected, parts.size, parts.page, sort);
+            "
+            >{{ name }}</v-chip
+        >
         <v-chip
             v-for="(type, index) in selected"
             :key="index"
             class="ma-2"
             close
-            @click:close="selected.splice(index, 1)"
+            @click:close="
+                selected.splice(index, 1);
+                getParts(name, selected, parts.size, parts.page, sort);
+            "
             >{{ type }}</v-chip
         >
         <v-spacer></v-spacer>
@@ -96,6 +121,7 @@
                                                 :key="updateComponentKey[index]"
                                                 :id="part.id"
                                                 :ref="'updateForm' + index"
+                                                :types="childTypes"
                                                 @updateSuccess="updateSuccess(index, ...arguments)"
                                                 @updateFail="updateFail"
                                             ></part-form>
@@ -128,6 +154,7 @@
             :length="parts.totalPages"
             :total-visible="7"
             color="green"
+            @input="getParts(name, selected, parts.size, parts.page, sort)"
         ></v-pagination>
         <v-dialog scrollable v-model="createDialog" persistent max-width="600px" @input="forceReloadCreateComponent">
             <template v-slot:activator="{ on, attrs }">
@@ -144,6 +171,7 @@
                         <part-form
                             :key="createComponentKey"
                             ref="newForm"
+                            :types="childTypes"
                             @createSuccess="createSuccess"
                             @createFail="createFail"
                         ></part-form>
@@ -160,7 +188,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import PartForm from "./PartForm";
 
 export default {
@@ -208,12 +236,29 @@ export default {
         hasData() {
             return !this.isEmpty(this.parts.parts);
         },
+        childTypes() {
+            let types = [];
+            this.types.forEach((type) => {
+                types = [...types, ...type.childType];
+            });
+            return types;
+        },
     },
     mounted() {
-        this.$store.dispatch("parts/getParts");
-        this.$store.dispatch("parts/getPartTypes");
+        this.getPartTypes();
+        this.getParts();
     },
     methods: {
+        ...mapActions({
+            getPartsAction: "parts/getParts",
+            getPartTypesAction: "parts/getPartTypes",
+        }),
+        getParts(name = "", types = [], size = 5, page = 0, sort = "") {
+            this.getPartsAction({ name, types, size, page, sort });
+        },
+        getPartTypes() {
+            this.getPartTypesAction();
+        },
         isEmpty(obj) {
             for (let key in obj) {
                 if (Object.prototype.hasOwnProperty.call(obj, key)) return false;
@@ -231,6 +276,7 @@ export default {
             this.showSuccess = state;
             this.message = message;
             this.createDialog = false;
+            this.getParts(this.name, this.selected, this.parts.size, this.parts.page, this.sort);
         },
         createFail(...value) {
             let [state, message] = value;
@@ -242,6 +288,7 @@ export default {
             this.showSuccess = state;
             this.message = message;
             this.updateDialog[index] = false;
+            this.getParts(this.name, this.selected, this.parts.size, this.parts.page, this.sort);
         },
         updateFail(...value) {
             let [state, message] = value;
