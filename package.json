@@ -6,14 +6,12 @@
     "scripts": {
         "dev": "cross-env NODE_ENV=development webpack-dev-server --progress",
         "staging": "cross-env NODE_ENV=staging webpack",
-        "build": "cross-env NODE_ENV=production webpack --progress",
-        "start": "node server.js"
+        "build": "cross-env NODE_ENV=production webpack --progress"
     },
     "author": "Phong Tran",
     "license": "ISC",
     "dependencies": {
         "@babel/polyfill": "^7.10.4",
-        "express": "^4.17.1",
         "vue": "^2.6.11",
         "vue-router": "^3.3.4",
         "vuetify": "^2.3.4",
@@ -28,6 +26,7 @@
         "@babel/plugin-syntax-import-meta": "^7.10.4",
         "@babel/preset-env": "^7.10.4",
         "babel-loader": "^8.1.0",
+        "clean-webpack-plugin": "^3.0.0",
         "compression-webpack-plugin": "^4.0.0",
         "cross-env": "^7.0.2",
         "css-loader": "^3.6.0",
@@ -40,6 +39,7 @@
         "optimize-css-assets-webpack-plugin": "^5.0.3",
         "sass": "^1.26.10",
         "sass-loader": "^9.0.2",
+        "terser-webpack-plugin": "^3.0.6",
         "uglifyjs-webpack-plugin": "^2.2.0",
         "vue-loader": "^15.9.3",
         "vue-style-loader": "^4.1.2",

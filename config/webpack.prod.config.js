@@ -3,8 +3,8 @@
 const webpack = require("webpack");
 const { merge } = require("webpack-merge");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
-const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const helpers = require("./helpers");
 const commonConfig = require("./webpack.common.config");
@@ -26,10 +26,11 @@ const prodWebpackConfig = merge(commonConfig, {
                     preset: ["default", { discardComments: { removeAll: true } }],
                 },
             }),
-            // new UglifyJSPlugin({
-            //    cache: true,
-            //    parallel: true,
-            // }),
+            new TerserPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: !isProduction
+            }),
         ],
         splitChunks: {
             chunks: "all",
@@ -42,6 +43,12 @@ const prodWebpackConfig = merge(commonConfig, {
                         const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
                         return `npm.${packageName.replace("@", "")}`;
                     },
+                },
+                styles: {
+                    test: /\.css$/,
+                    name: "styles",
+                    chunks: "all",
+                    enforce: true,
                 },
             },
         },

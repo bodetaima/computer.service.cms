@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import { API_URL } from "../services/request.service";
-import authHeader from "../services/auth-header";
+import CommonService from "@/services/common.service";
+
 export default {
     name: "Home",
     data() {
@@ -16,21 +16,10 @@ export default {
             content: "",
         };
     },
-    async mounted() {
-        await fetch(API_URL, {
-            headers: authHeader(),
-        })
-            .then((response) => {
-                if (response.status === 401) {
-                    this.$store.dispatch("auth/logout");
-                    this.$router.push("/login");
-                    return;
-                }
-                return response.json();
-            })
-            .then((res) => {
-                this.content = res.message;
-            });
+    mounted() {
+        CommonService.indexCommonAPI().then((response) => {
+            this.content = response.message;
+        });
     },
 };
 </script>

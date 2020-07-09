@@ -1,15 +1,11 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Home from "../components/Home";
-import Parts from "../components/parts/Parts";
-import Login from "../components/auth/Login";
-import Orders from "../components/orders/Orders";
-import CreateOrder from "../components/orders/CreateOrder";
-import Profile from "../components/auth/Profile";
-import Computers from "../components/computers/Computers";
-import Customers from "../components/customers/Customers";
 
 Vue.use(Router);
+
+const Home = () => import("@/components/Home.vue");
+const Parts = () => import("@/components/parts/Parts.vue");
+const Login = () => import("@/components/auth/Login.vue");
 
 export const router = new Router({
     mode: "history",
@@ -28,46 +24,6 @@ export const router = new Router({
             component: Parts,
             meta: {
                 title: "Linh kiện máy tính - WeFixIt",
-            },
-        },
-        {
-            path: "/orders",
-            name: "Orders",
-            component: Orders,
-            meta: {
-                title: "Đơn hàng - WeFixIt",
-            },
-        },
-        {
-            path: "/order/create",
-            name: "CreateOrder",
-            component: CreateOrder,
-            meta: {
-                title: "Tạo đơn hàng mới - WeFixIt",
-            },
-        },
-        {
-            path: "/computers",
-            name: "Computers",
-            component: Computers,
-            meta: {
-                title: "Máy tính - WeFixIt",
-            },
-        },
-        {
-            path: "/customers",
-            name: "Customers",
-            component: Customers,
-            meta: {
-                title: "Khách hàng - WeFixIt",
-            },
-        },
-        {
-            path: "/profile",
-            name: "Profile",
-            component: Profile,
-            meta: {
-                title: "Thông tin cá nhân - WeFitIt",
             },
         },
         {

@@ -24,7 +24,7 @@
 <script>
 import { API_URL } from "../../services/request.service";
 import authHeader from "../../services/auth-header";
-
+import PartsService from "@/services/parts.service";
 export default {
     name: "PartForm",
     props: {
@@ -66,61 +66,49 @@ export default {
     },
     methods: {
         async getPartDetails(id) {
-            return await fetch(API_URL + `parts/${id}`, {
-                headers: authHeader(),
-            })
-                .then((response) => {
-                    if (response.status === 401) {
-                        this.$store.dispatch("auth/logout");
-                        this.$router.push("/login");
-                    }
-
-                    return response.json();
-                })
-                .then((res) => {
+            return await PartsService.getPartDetail(id)
+                .then((part) => {
                     this.update = true;
-                    this.name = res.name;
-                    this.type = res.type.type;
-                    this.price = res.price;
-                    this.description = res.description;
-                });
+                    this.name = part.name;
+                    this.type = part.type.type;
+                    this.price = part.price;
+                    this.description = part.description;
+                })
+                .catch((e) => {});
         },
-        async onCreatePart() {
+        async onSubmit() {
             if (!this.type || !this.name || !this.description || !this.price) {
                 this.message = "Vui lòng nhập các trường còn thiếu!";
                 this.showError = true;
-                this.$emit("createFail", this.showError, this.message);
+                if (!this.update) {
+                    this.$emit("createFail", this.showError, this.message);
+                } else {
+                    this.$emit("updateFail", this.showError, this.message);
+                }
+
                 return;
             }
 
             if (this.price <= 0) {
                 this.message = "Giá linh kiện không thể âm hoặc bằng 0!";
                 this.showError = true;
-                this.$emit("createFail", this.showError, this.message);
+                if (!this.update) {
+                    this.$emit("createFail", this.showError, this.message);
+                } else {
+                    this.$emit("updateFail", this.showError, this.message);
+                }
                 return;
             }
 
             if (this.type && this.name && this.description && this.price) {
-                const data = {
-                    name: this.name,
-                    type: this.type,
-                    price: this.price,
-                    description: this.description,
-                };
-                await fetch(API_URL + "parts", {
-                    method: "POST",
-                    headers: authHeader(),
-                    body: JSON.stringify(data),
-                })
-                    .then((response) => {
-                        if (response.status === 401) {
-                            this.$store.dispatch("auth/logout");
-                            this.$router.push("/login");
-                        }
-
-                        return response.json();
-                    })
-                    .then(
+                if (!this.update) {
+                    const data = {
+                        name: this.name,
+                        type: this.type,
+                        price: this.price,
+                        description: this.description,
+                    };
+                    PartsService.createPart(data).then(
                         () => {
                             this.showSuccess = true;
                             this.message = "Lưu thành công!";
@@ -134,43 +122,13 @@ export default {
                             this.$emit("createFail", this.showError, this.message);
                         }
                     );
-            }
-        },
-        async onUpdatePart() {
-            if (!this.type || !this.name || !this.description || !this.price) {
-                this.message = "Vui lòng nhập các trường còn thiếu!";
-                this.showError = true;
-                this.$emit("updateFail", this.showError, this.message);
-                return;
-            }
-
-            if (this.price <= 0) {
-                this.message = "Giá linh kiện không thể âm hoặc bằng 0!";
-                this.showError = true;
-                this.$emit("updateFail", this.showError, this.message);
-                return;
-            }
-
-            if (this.type && this.name && this.description && this.price) {
-                const data = {
-                    name: this.name,
-                    price: this.price,
-                    description: this.description,
-                };
-                await fetch(API_URL + `parts/${this.id}`, {
-                    method: "PUT",
-                    headers: authHeader(),
-                    body: JSON.stringify(data),
-                })
-                    .then((response) => {
-                        if (response.status === 401) {
-                            this.$store.dispatch("auth/logout");
-                            this.$router.push("/login");
-                        }
-
-                        return response.json();
-                    })
-                    .then(
+                } else {
+                    const data = {
+                        name: this.name,
+                        price: this.price,
+                        description: this.description,
+                    };
+                    PartsService.updatePart(this.id, data).then(
                         () => {
                             this.showSuccess = true;
                             this.message = "Lưu thành công!";
@@ -184,6 +142,7 @@ export default {
                             this.$emit("updateFail", this.showError, this.message);
                         }
                     );
+                }
             }
         },
         isEmpty(obj) {

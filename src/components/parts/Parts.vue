@@ -189,11 +189,12 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import PartForm from "./PartForm";
 
 export default {
     name: "Parts",
-    components: { PartForm },
+    components: { 
+        PartForm: () => import("./PartForm.vue") 
+    },
     data() {
         return {
             name: "",
@@ -266,10 +267,10 @@ export default {
             return true;
         },
         createSubmit() {
-            this.$refs.newForm.onCreatePart();
+            this.$refs.newForm.onSubmit();
         },
         updateSubmit(index) {
-            this.$refs["updateForm" + index][0].onUpdatePart();
+            this.$refs["updateForm" + index][0].onSubmit();
         },
         createSuccess(...value) {
             let [state, message] = value;

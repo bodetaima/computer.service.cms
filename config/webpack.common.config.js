@@ -4,6 +4,7 @@ const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const helpers = require("./helpers");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const isDevelopment = process.env.NODE_ENV === "development";
 const env = process.env.NODE_ENV;
 
@@ -32,34 +33,17 @@ const commonWebpackConfig = {
                 ],
             },
             {
-                test: /\.scss$/,
+                test: /\.s(c|a)ss$/,
                 use: [
-                    isDevelopment ? "vue-style-loader" : MiniCSSExtractPlugin.loader,
-                    { loader: "css-loader", options: { sourceMap: isDevelopment } },
+                    "vue-style-loader",
+                    "css-loader",
                     {
                         loader: "sass-loader",
                         options: {
                             implementation: require("sass"),
                             sassOptions: {
                                 fiber: require("fibers"),
-                                indentedSyntax: true,
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                test: /\.sass$/,
-                use: [
-                    isDevelopment ? "vue-style-loader" : MiniCSSExtractPlugin.loader,
-                    { loader: "css-loader", options: { sourceMap: isDevelopment } },
-                    {
-                        loader: "sass-loader",
-                        options: {
-                            implementation: require("sass"),
-                            sassOptions: {
-                                fiber: require("fibers"),
-                                indentedSyntax: true,
+                                indentedSyntax: true, // optional
                             },
                         },
                     },
@@ -68,6 +52,7 @@ const commonWebpackConfig = {
         ],
     },
     plugins: [
+        new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new HtmlPlugin({
             template: "index.html",
