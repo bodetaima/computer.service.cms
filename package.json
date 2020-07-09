@@ -12,6 +12,7 @@
     "author": "Phong Tran",
     "license": "ISC",
     "dependencies": {
+        "@babel/polyfill": "^7.10.4",
         "express": "^4.17.1",
         "vue": "^2.6.11",
         "vue-router": "^3.3.4",

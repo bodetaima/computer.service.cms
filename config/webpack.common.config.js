@@ -10,6 +10,7 @@ const env = process.env.NODE_ENV;
 const commonWebpackConfig = {
     mode: env || "development",
     entry: {
+        polyfill: "@babel/polyfill",
         main: helpers.root("src", "main"),
     },
     resolve: {
