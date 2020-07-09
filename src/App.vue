@@ -39,7 +39,7 @@
                 <v-list-item
                     link
                     @click.prevent="
-                        logOut();
+                        logout();
                         drawer = !drawer;
                     "
                 >
@@ -84,10 +84,10 @@ export default {
     },
     methods: {
         ...mapActions({
-            logOutAction: "auth/logout",
+            logoutAction: "auth/logout",
         }),
-        logOut() {
-            this.logOutAction();
+        logout() {
+            this.logoutAction();
             this.$router.push("/login");
         },
     },

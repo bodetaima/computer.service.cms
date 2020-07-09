@@ -1,5 +1,7 @@
 import { API_URL } from "./request.service";
 import authHeader from "./auth-header";
+import store from "@/store";
+import { router } from "@/routes/router";
 
 class PartsService {
     async getData(url = "") {
@@ -13,8 +15,8 @@ class PartsService {
 
         if (!response.ok) {
             if ([401, 403].indexOf(response.status) !== -1) {
-                this.$store.dispatch("auth/logout");
-                this.$router.push("/login");
+                store.dispatch("auth/logout");
+                router.push("/login");
                 return;
             }
         }
