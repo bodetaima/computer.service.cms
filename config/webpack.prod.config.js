@@ -1,7 +1,7 @@
 "use strict";
 
 const webpack = require("webpack");
-const merge = require("webpack-merge");
+const { merge } = require("webpack-merge");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
@@ -11,7 +11,7 @@ const commonConfig = require("./webpack.common.config");
 const isProduction = process.env.NODE_ENV === "production";
 const environment = isProduction ? require("./env/prod.env") : require("./env/staging.env");
 
-const prodWebpackConfig = merge.merge(commonConfig, {
+const prodWebpackConfig = merge(commonConfig, {
     output: {
         path: helpers.root("dist"),
         publicPath: "/",
