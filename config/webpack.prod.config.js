@@ -26,11 +26,10 @@ const prodWebpackConfig = merge(commonConfig, {
                     preset: ["default", { discardComments: { removeAll: true } }],
                 },
             }),
-            new UglifyJSPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: !isProduction,
-            }),
+            // new UglifyJSPlugin({
+            //    cache: true,
+            //    parallel: true,
+            // }),
         ],
         splitChunks: {
             chunks: "all",
@@ -43,12 +42,6 @@ const prodWebpackConfig = merge(commonConfig, {
                         const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
                         return `npm.${packageName.replace("@", "")}`;
                     },
-                },
-                styles: {
-                    test: /\.css$/,
-                    name: "styles",
-                    chunks: "all",
-                    enforce: true,
                 },
             },
         },

@@ -6,12 +6,11 @@
     "scripts": {
         "dev": "cross-env NODE_ENV=development webpack-dev-server --progress",
         "staging": "cross-env NODE_ENV=staging webpack",
-        "build": "cross-env NODE_ENV=production webpack"
+        "build": "cross-env NODE_ENV=production webpack --progress"
     },
     "author": "Phong Tran",
     "license": "ISC",
     "dependencies": {
-        "@babel/polyfill": "^7.10.4",
         "vue": "^2.6.11",
         "vue-router": "^3.3.4",
         "vuetify": "^2.3.4",

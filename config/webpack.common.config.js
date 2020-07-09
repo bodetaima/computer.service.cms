@@ -10,7 +10,6 @@ const env = process.env.NODE_ENV;
 const commonWebpackConfig = {
     mode: env || "development",
     entry: {
-        polyfill: "@babel/polyfill",
         main: helpers.root("src", "main"),
     },
     resolve: {
@@ -67,7 +66,18 @@ const commonWebpackConfig = {
             },
         ],
     },
-    plugins: [new VueLoaderPlugin(), new HtmlPlugin({ template: "index.html" })],
+    plugins: [
+        new VueLoaderPlugin(),
+        new HtmlPlugin({
+            template: "index.html",
+            inject: true,
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                removeAttributeQuotes: true,
+            },
+        }),
+    ],
 };
 
 module.exports = commonWebpackConfig;
