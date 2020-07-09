@@ -32,10 +32,10 @@ const prodWebpackConfig = merge(commonConfig, {
                 sourceMap: !isProduction,
             }),
         ],
-        splitChunk: {
-            chunk: "all",
+        splitChunks: {
+            chunks: "all",
             maxInitialRequests: Infinity,
-            miniSize: 0,
+            minSize: 0,
             cacheGroups: {
                 vendor: {
                     test: /[\\/]node_modules[\\/]/,
@@ -43,12 +43,12 @@ const prodWebpackConfig = merge(commonConfig, {
                         const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
                         return `npm.${packageName.replace("@", "")}`;
                     },
-                    styles: {
-                        test: /\.css$/,
-                        name: "styles",
-                        chunks: "all",
-                        enforce: true,
-                    },
+                },
+                styles: {
+                    test: /\.css$/,
+                    name: "styles",
+                    chunks: "all",
+                    enforce: true,
                 },
             },
         },
