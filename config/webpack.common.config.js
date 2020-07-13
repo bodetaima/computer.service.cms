@@ -6,10 +6,8 @@ const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const helpers = require("./helpers");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const isDevelopment = process.env.NODE_ENV === "development";
-const env = process.env.NODE_ENV;
 
 const commonWebpackConfig = {
-    mode: env || "development",
     entry: {
         polyfill: "@babel/polyfill",
         main: helpers.root("src", "main"),

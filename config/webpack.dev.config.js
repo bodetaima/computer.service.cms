@@ -1,13 +1,14 @@
-"use strict"
+"use strict";
 
 const webpack = require("webpack");
-const {merge} = require("webpack-merge");
+const { merge } = require("webpack-merge");
 const FriendlyErrorsPlugin = require("friendly-errors-webpack-plugin");
 const helpers = require("./helpers");
 const commonConfig = require("./webpack.common.config");
 const environment = require("./env/dev.env");
 
 const devWebpackConfig = merge(commonConfig, {
+    mode: "development",
     devtool: "cheap-module-eval-source-map",
     output: {
         path: helpers.root("dist"),

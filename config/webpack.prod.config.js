@@ -12,6 +12,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const environment = isProduction ? require("./env/prod.env") : require("./env/staging.env");
 
 const prodWebpackConfig = merge(commonConfig, {
+    mode: "production",
     output: {
         path: helpers.root("dist"),
         publicPath: "/",
@@ -29,7 +30,7 @@ const prodWebpackConfig = merge(commonConfig, {
             new TerserPlugin({
                 cache: true,
                 parallel: true,
-                sourceMap: !isProduction
+                sourceMap: !isProduction,
             }),
         ],
         splitChunks: {
