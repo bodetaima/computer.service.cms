@@ -31,7 +31,7 @@ export default {
     },
     computed: {
         ...mapState({
-            loggedIn: (store) => store.auth.status.loggedIn,
+            loggedIn: (store) => store.status.loggedIn,
         }),
     },
     created() {
@@ -41,7 +41,7 @@ export default {
     },
     methods: {
         ...mapActions({
-            login: "auth/login",
+            login: "login",
         }),
         handleLogin() {
             this.loading = true;

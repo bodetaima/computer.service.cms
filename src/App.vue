@@ -78,13 +78,13 @@ export default {
     },
     computed: {
         ...mapState({
-            currentUser: (store) => store.auth.user,
-            loggedIn: (store) => store.auth.status.loggedIn,
+            currentUser: (store) => store.user,
+            loggedIn: (store) => store.status.loggedIn,
         }),
     },
     methods: {
         ...mapActions({
-            logoutAction: "auth/logout",
+            logoutAction: "logout",
         }),
         logout() {
             this.logoutAction();

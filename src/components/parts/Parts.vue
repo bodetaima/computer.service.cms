@@ -192,8 +192,8 @@ import { mapState, mapActions } from "vuex";
 
 export default {
     name: "Parts",
-    components: { 
-        PartForm: () => import("./PartForm.vue") 
+    components: {
+        PartForm: () => import("./PartForm.vue"),
     },
     data() {
         return {
@@ -231,8 +231,8 @@ export default {
     },
     computed: {
         ...mapState({
-            types: (state) => state.parts.types,
-            parts: (state) => state.parts.parts,
+            types: (state) => state.types,
+            parts: (state) => state.parts,
         }),
         hasData() {
             return !this.isEmpty(this.parts.parts);
@@ -251,8 +251,8 @@ export default {
     },
     methods: {
         ...mapActions({
-            getPartsAction: "parts/getParts",
-            getPartTypesAction: "parts/getPartTypes",
+            getPartsAction: "getParts",
+            getPartTypesAction: "getPartTypes",
         }),
         getParts(name = "", types = [], size = 5, page = 0, sort = "") {
             this.getPartsAction({ name, types, size, page, sort });

@@ -1,6 +1,6 @@
 import authHeader from "./auth-header";
-import store from "@/store";
-import { router } from "@/routes/router";
+import { store } from "@/main";
+import { router } from "@/main";
 
 export async function getData(url = "") {
     const response = await fetch(url, {
@@ -10,7 +10,7 @@ export async function getData(url = "") {
 
     if (!response.ok) {
         if ([401, 403].indexOf(response.status) !== -1) {
-            store.dispatch("auth/logout");
+            store.dispatch("logout");
             router.push("/login");
             return;
         }
@@ -27,7 +27,7 @@ export async function postData(url, data) {
 
     if (!response.ok) {
         if ([401, 403].indexOf(response.status) !== -1) {
-            store.dispatch("auth/logout");
+            store.dispatch("logout");
             router.push("/login");
         }
     }
@@ -60,7 +60,7 @@ export async function putData(url, data) {
 
     if (!response.ok) {
         if ([401, 403].indexOf(response.status) !== -1) {
-            store.dispatch("auth/logout");
+            store.dispatch("logout");
             router.push("/login");
         }
     }

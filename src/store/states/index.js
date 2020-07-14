@@ -4,4 +4,6 @@ export default {
         loggedIn: user ? true : false,
     },
     user: user ? user : null,
+    types: [],
+    parts: {},
 };
