@@ -1,7 +1,7 @@
 {
-    "name": "vue-webpack-project",
+    "name": "computer.services.cms",
     "version": "1.0.0",
-    "description": "The Vue Project without CLI.",
+    "description": "The Computer Services Vue Project",
     "main": "index.js",
     "scripts": {
         "dev": "cross-env NODE_ENV=development webpack-dev-server --progress",
